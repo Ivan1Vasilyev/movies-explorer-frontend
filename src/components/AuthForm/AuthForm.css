@@ -1,0 +1,141 @@
+.form {
+  width: 456px;
+  min-height: 631px;
+  padding-top: 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.form__fields {
+  display: flex;
+  flex-direction: column;
+}
+
+.form__title {
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 1.21;
+  width: 100%;
+  margin: 40px auto;
+}
+
+.form__label {
+  color: #8b8b8b;
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.form__input {
+  font-size: 14px;
+  line-height: 1.21;
+  height: 27px;
+  font-size: 14px;
+  line-height: 1.21;
+  padding: 0 0 5px;
+  border: none;
+  background-color: transparent;
+  border-bottom: 1px solid #424242;
+}
+
+.form__input:focus {
+  border-bottom: 1px solid #4285f4;
+  outline: none;
+}
+
+.form__error {
+  margin: 6px 0;
+}
+
+.form__submit-area {
+  text-align: center;
+}
+
+.form__submit-button {
+  width: 100%;
+  color: #fff;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.21;
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  height: 45px;
+  box-shadow: 0 0 40px 40px #4285f4 inset;
+  transition: 0.3s ease-in-out;
+}
+
+.form__submit-button:active {
+  transform: scale(0.9);
+}
+
+.form__submit-button_disabled {
+  color: #000;
+  opacity: 0.4;
+}
+
+.form__caption {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.21;
+  color: #8b8b8b;
+  margin: 16px 0 0;
+}
+
+.form__link {
+  color: #4285f4;
+  text-decoration: none;
+  margin-left: 7px;
+  transition: 0.3s ease-in-out;
+}
+
+.form__link:active {
+  transform: scale(0.9);
+}
+
+@media (any-hover: hover) {
+  .form__link:hover {
+    display: inline-block;
+    transform: scale(1.1);
+  }
+  .form__submit-button:hover {
+    cursor: pointer;
+    box-shadow: 0 0 10px 3px #4285f4 inset;
+    background-color: rgba(61, 220, 132, 0.7);
+  }
+  .form__submit-button_disabled:hover {
+    box-shadow: 0 0 40px 40px #4285f4 inset;
+    cursor: default;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .form {
+    padding-top: 231px;
+    min-height: 791px;
+  }
+}
+
+@media screen and (max-width: 520px) {
+  .form {
+    width: 100%;
+    min-height: 751px;
+    padding: 57px 30px 0;
+  }
+  .form__logo {
+    margin: 0 auto;
+  }
+  .form__title {
+    text-align: center;
+    margin: 50px auto 80px;
+  }
+  .form__submit-button {
+    font-size: 12px;
+    line-height: 1.25;
+  }
+  .form__caption {
+    font-size: 12px;
+    line-height: 1.25;
+    margin-top: 15px;
+  }
+}

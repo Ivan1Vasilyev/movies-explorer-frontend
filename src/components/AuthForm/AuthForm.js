@@ -1,8 +1,31 @@
 import './AuthForm.css';
 import Logo from '../Logo/Logo';
+import { Link } from 'react-router-dom';
 
-const AuthForm = () => {
-  return <Logo />;
+const AuthForm = (props) => {
+  return (
+    <form className="form page__element">
+      <div className="form__fields">
+        <Logo mixStyle="form__logo" />
+        <h1 className="form__title">{props.title}</h1>
+        {props.children}
+      </div>
+      <div className="form__submit-area">
+        <button
+          className={`form__submit-button ${props.disabled && 'form__submit-button_disabled'}`}
+          type="submit"
+        >
+          {props.buttonText}
+        </button>
+        <p className="form__caption">
+          {props.captionText}
+          <Link to={props.route} className="form__link">
+            {props.linkText}
+          </Link>
+        </p>
+      </div>
+    </form>
+  );
 };
 
 export default AuthForm;
