@@ -1,12 +1,12 @@
 .searchform {
   display: grid;
   grid-template-columns: 1fr 80px;
-  grid-template-rows: 48px 1fr;
+  grid-template-rows: 48px 12px 1fr;
   grid-template-areas:
     'input button'
+    'error .'
     'checkbox checkbox';
-  row-gap: 31px;
-  padding: 80px 0 38px;
+  padding: 80px 0 37px;
   border-bottom: 1px solid #424242;
 }
 
@@ -35,6 +35,10 @@
   outline: none;
 }
 
+.searchform__error {
+  grid-area: error;
+}
+
 .searchform__submit {
   color: #fff;
   font-weight: 500;
@@ -52,6 +56,7 @@
 }
 
 .searchform__checkbox {
+  margin-top: 19px;
   grid-area: checkbox;
 }
 
@@ -81,10 +86,11 @@
 @media screen and (max-width: 520px) {
   .searchform {
     grid-template-rows: 44px 1fr;
-    row-gap: 45px;
-    padding-bottom: 42px;
+    padding: 80px 4px 42px;
   }
-
+  .searchform__checkbox {
+    margin-top: 32px;
+  }
   .searchform__input {
     padding-left: 16px;
   }
