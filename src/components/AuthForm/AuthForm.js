@@ -14,6 +14,7 @@ const AuthForm = (props) => {
         <button
           className={`form__submit-button ${props.disabled && 'form__submit-button_disabled'}`}
           type="submit"
+          aria-label="Отправить данные"
         >
           {props.buttonText}
         </button>

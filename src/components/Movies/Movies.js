@@ -1,14 +1,16 @@
 import './Movies.css';
-import Header from '../Header/Header';
-import Footer from '../Footer/Footer';
+import SearchForm from '../SearchForm/SearchForm';
+import MoviesCardList from '../MoviesCardList/MoviesCardList';
+import Container from '../Container/Container';
 
-const Movies = () => {
+const Movies = ({ moviesData, isButtonNeed, isOwner }) => {
   return (
-    <>
-      <Header loggedIn={true} />
-      <main className="movies"></main>
-      <Footer />
-    </>
+    <Container loggedIn={true}>
+      <main className="movies page__element">
+        <SearchForm />
+        <MoviesCardList moviesData={moviesData} isButtonNeed={isButtonNeed} isOwner={isOwner} />
+      </main>
+    </Container>
   );
 };
 

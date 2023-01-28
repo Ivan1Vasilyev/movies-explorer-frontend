@@ -1,6 +1,5 @@
 import './Profile.css';
 import Field from '../Field/Field';
-import Container from '../Container/Container';
 import Header from '../Header/Header';
 import { Link } from 'react-router-dom';
 
@@ -37,10 +36,11 @@ const Profile = (props) => {
               props.disabled && 'profile__submit-button_disabled'
             }`}
             type="submit"
+            aria-label="Редактировать"
           >
             Редактировать
           </button>
-          <Link to={'/'} className="profile__link">
+          <Link to={'/'} className="profile__link" aria-label="Выйти из аккаунта">
             Выйти из аккаунта
           </Link>
         </div>

@@ -1,3 +1,9 @@
 .movies {
   flex: 1;
 }
+
+@media screen and (max-width: 520px) {
+  .movies {
+    padding: 0 10px;
+  }
+}
