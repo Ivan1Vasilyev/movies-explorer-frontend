@@ -76,13 +76,6 @@
   }
 }
 
-@media screen and (max-width: 768px) {
-  .form {
-    padding-top: 231px;
-    min-height: 791px;
-  }
-}
-
 @media screen and (max-width: 520px) {
   .searchform {
     grid-template-rows: 44px 1fr;

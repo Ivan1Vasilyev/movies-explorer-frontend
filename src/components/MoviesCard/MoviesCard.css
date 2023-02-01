@@ -33,11 +33,20 @@
   grid-area: duration;
 }
 
-.movie__like {
-  width: 14px;
-  height: 12px;
+.movie__button {
   grid-area: like;
   transition: 0.3s;
+}
+
+.movie__button_state_add {
+  width: 14px;
+  height: 12px;
+}
+
+.movie__button_state_delete {
+  width: 10px;
+  height: 10px;
+  margin: 2px 0 0 3px;
 }
 
 .movie__poster {
@@ -46,7 +55,7 @@
 }
 
 @media (any-hover: hover) {
-  .movie__like:hover {
+  .movie__button:hover {
     cursor: pointer;
     transform: scale(1.2);
   }
@@ -83,7 +92,10 @@
     line-height: 1.18;
     margin-top: 2px;
   }
-  .movie__like {
+  .movie__button_state_add {
     margin: 2px 0 0 5px;
+  }
+  .movie__button_state_delete {
+    margin: 4px 0 0 8px;
   }
 }

@@ -13,7 +13,9 @@ const MoviesCard = ({ name, img, duration, isLiked, isOwner }) => {
         <h2 className="movie__name">{name}</h2>
         <p className="movie__duration">{time}</p>
         <img
-          className="movie__like"
+          className={`movie__button ${
+            isOwner ? 'movie__button_state_delete' : 'movie__button_state_add'
+          }`}
           src={isOwner ? deleteIcon : isLiked ? liked : like}
           alt={isOwner ? 'Удалить из коллекции' : 'Добавить в коллекцию'}
         />

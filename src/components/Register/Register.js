@@ -21,6 +21,7 @@ const Register = () => {
         labelStyle="form__label"
         value="Виталий"
         errorStyle="form__error"
+        required={true}
       />
       <Field
         inputStyle="form__input"
@@ -30,6 +31,7 @@ const Register = () => {
         labelStyle="form__label"
         value="pochta@yandex.ru"
         errorStyle="form__error"
+        required={true}
       />
       <Field
         inputStyle="form__input"
@@ -41,6 +43,7 @@ const Register = () => {
         errtext="Что-то пошло не так..."
         value="qwerty12345678"
         errorStyle="form__error"
+        required={true}
       />
     </AuthForm>
   );

@@ -4,11 +4,12 @@
   align-items: center;
   font-size: 13px;
   line-height: 1.23;
+  padding: 0 30px;
 }
 
 .footer__capture {
   color: #8b8b8b;
-  margin: 159px auto 20px;
+  margin: 148px auto 20px;
 }
 
 .footer__underline {
@@ -46,6 +47,9 @@
     font-size: 12px;
     line-height: 1.25;
     padding: 0 10px;
+  }
+  .footer__capture {
+    margin-top: 129px;
   }
   .footer__underline {
     flex-direction: column-reverse;

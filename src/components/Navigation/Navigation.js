@@ -8,45 +8,69 @@ import {
   ROUTE_SIGN_IN,
   ROUTE_SIGN_UP,
 } from '../../utils/constants';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-const Navigation = ({ loggedIn, isOpen }) => {
-  const [selected, setSelected] = useState(true);
+const Navigation = ({ loggedIn, isOpen, onClose, place }) => {
+  const [currentPlace, setCurrentPlace] = useState({
+    movies: false,
+    savedMovies: false,
+    account: false,
+    main: false,
+  });
+
+  useEffect(() => {
+    if (place) setCurrentPlace((state) => ({ ...state, [place]: true }));
+  }, [place]);
 
   return (
-    <nav className={`nav ${isOpen && 'nav_opened'}`}>
+    <>
       {loggedIn ? (
-        <>
+        <nav className={`nav nav_hidden ${isOpen && 'nav_opened'}`}>
           {isOpen && (
-            <Link className="nav__link" to="/">
+            <Link
+              className={`nav__link ${currentPlace.main && 'nav__link_selected'}`}
+              to="/"
+              onClick={onClose}
+            >
               Главная
             </Link>
           )}
-          <Link className={`nav__link ${selected && 'nav__link_selected'}`} to={ROUTE_MOVIES}>
+          <Link
+            className={`nav__link ${currentPlace.movies && 'nav__link_selected'}`}
+            to={ROUTE_MOVIES}
+            onClick={onClose}
+          >
             Фильмы
           </Link>
           <Link
-            className={`nav__link ${!isOpen && 'nav__link_place_saved-movies'}`}
+            className={`nav__link ${currentPlace.savedMovies && 'nav__link_selected'}`}
             to={ROUTE_SAVED_MOVIES}
+            onClick={onClose}
           >
             Сохранённые фильмы
           </Link>
-          <Link className={`nav__link nav__link_place_account`} to={ROUTE_PROFILE}>
+          <Link
+            className={`nav__link nav__link_place_account ${
+              currentPlace.account && 'nav__link_selected'
+            }`}
+            to={ROUTE_PROFILE}
+            onClick={onClose}
+          >
             Аккаунт
             <img className="nav__account-icon" src={accountIcon} alt="Иконка аккаунта"></img>
           </Link>
-        </>
+        </nav>
       ) : (
-        <>
-          <Link className="nav__link" to={ROUTE_SIGN_UP}>
+        <nav className="nav">
+          <Link className="nav__link nav__link_place_register" to={ROUTE_SIGN_UP} onClick={onClose}>
             Регистрация
           </Link>
-          <Link className="nav__link" to={ROUTE_SIGN_IN}>
+          <Link className="nav__link nav__link_place_login" to={ROUTE_SIGN_IN} onClick={onClose}>
             Войти
           </Link>
-        </>
+        </nav>
       )}
-    </nav>
+    </>
   );
 };
 

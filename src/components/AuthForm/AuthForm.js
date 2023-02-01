@@ -7,7 +7,7 @@ const AuthForm = (props) => {
     <form className="form page__element">
       <div className="form__fields">
         <Logo mixStyle="form__logo" />
-        <h1 className="form__title">{props.title}</h1>
+        <h2 className="form__title">{props.title}</h2>
         {props.children}
       </div>
       <div className="form__submit-area">

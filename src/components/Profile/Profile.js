@@ -6,9 +6,9 @@ import { Link } from 'react-router-dom';
 const Profile = (props) => {
   return (
     <>
-      <Header loggedIn={true} />
-      <form className="profile__form page__element">
-        <h1 className="profile__title">Привет, Виталий!</h1>
+      <Header loggedIn={true} place="account" />
+      <form className="profile page__element">
+        <h2 className="profile__title">Привет, Виталий!</h2>
         <Field
           name="name"
           type="text"

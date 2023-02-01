@@ -20,6 +20,7 @@ const Login = () => {
         labelStyle="form__label"
         value="pochta@yandex.ru"
         errorStyle="form__error"
+        required={true}
       />
       <Field
         inputStyle="form__input"
@@ -29,6 +30,7 @@ const Login = () => {
         labelStyle="form__label"
         value="qwerty12345678"
         errorStyle="form__error"
+        required={true}
       />
     </AuthForm>
   );

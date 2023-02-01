@@ -13,12 +13,14 @@ import Profile from '../Profile/Profile';
 import PageNotFound from '../PageNotFound/PageNotFound';
 import Movies from '../Movies/Movies';
 import SavedMovies from '../SavedMovies/SavedMovies';
+import Main from '../Main/Main';
 import { moviesData } from '../../utils/constants';
 
 const App = () => {
   return (
     <Page>
       <Routes>
+        <Route exact path="/" element={<Main />} />
         <Route path={ROUTE_SIGN_UP} element={<Register />} />
         <Route path={ROUTE_SIGN_IN} element={<Login />} />
         <Route path={ROUTE_PROFILE} element={<Profile />} />
