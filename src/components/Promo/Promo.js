@@ -10,7 +10,7 @@ const Promo = () => (
     <p className="promo__paragraph">
       Листайте ниже, чтобы узнать больше про этот проект и его создателя.
     </p>
-    <a href="*" className="promo__link">
+    <a href="#about" className="promo__link">
       <span className="promo__link-text">Узнать больше</span>
     </a>
   </section>

@@ -2,7 +2,7 @@ import './AboutProject.css';
 import TitleWithLine from '../TitleWithLine/TitleWithLine';
 
 const AboutProject = () => (
-  <section className="about page__element">
+  <section className="about page__element" id="about">
     <TitleWithLine text="О проекте" />
     <div className="about__description">
       <div className="about__part">
