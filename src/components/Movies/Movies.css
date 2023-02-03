@@ -1,6 +1,8 @@
 .movies {
   flex: 1;
   padding: 0 30px;
+  display: flex;
+  flex-direction: column;
 }
 
 @media screen and (max-width: 520px) {
