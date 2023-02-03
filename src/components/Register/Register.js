@@ -25,7 +25,7 @@ const Register = (props) => {
         type="text"
         label="Имя"
         formik={formik}
-        placeHolder="Введите имя"
+        placeholder="Введите имя"
       />
       <Field
         className={`form__input ${touched.email && errors.email && 'form__input_onError'}`}
@@ -35,7 +35,7 @@ const Register = (props) => {
         type="email"
         label="E-mail"
         formik={formik}
-        placeHolder="Введите е-mail"
+        placeholder="Введите е-mail"
       />
       <Field
         className={`form__input ${touched.password && errors.password && 'form__input_onError'}`}
@@ -45,7 +45,7 @@ const Register = (props) => {
         type="password"
         label="Пароль"
         formik={formik}
-        placeHolder="Введите пароль"
+        placeholder="Введите пароль"
       />
     </AuthForm>
   );

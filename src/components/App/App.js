@@ -15,8 +15,10 @@ import Movies from '../Movies/Movies';
 import SavedMovies from '../SavedMovies/SavedMovies';
 import Main from '../Main/Main';
 import { moviesData } from '../../utils/constants';
+import { useState } from 'react';
 
 const App = () => {
+  const [loggedIn, setLoggedIn] = useState(false);
   return (
     <Page>
       <Routes>

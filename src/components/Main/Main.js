@@ -14,7 +14,7 @@ const Main = () => (
       <Promo />
     </section>
     <AboutProject />
-    <section className="main main_place_tech" mutated={true}>
+    <section className="main main_place_tech">
       <Techs />
     </section>
     <AboutMe />

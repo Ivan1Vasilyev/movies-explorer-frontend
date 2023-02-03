@@ -10,6 +10,7 @@ const AuthForm = (props) => (
       {props.children}
     </div>
     <div className="form__submit-area">
+      <p className="form__submit-error">{props.errorMessage}</p>
       <button
         className={`form__submit-button ${props.disabled && 'form__submit-button_disabled'}`}
         type="submit"
