@@ -1,6 +1,6 @@
 import './Field.css';
 
-const Field = ({ name, label, labelStyle, onError, errtext, inputStyle, errorStyle, ...props }) => (
+const Field = ({ formik, name, label, labelStyle, errorStyle, ...props }) => (
   <>
     {label && (
       <label className={labelStyle} htmlFor={name}>
@@ -8,11 +8,15 @@ const Field = ({ name, label, labelStyle, onError, errtext, inputStyle, errorSty
       </label>
     )}
     <input
-      className={`field__input ${onError && 'field__input_onError'} ${inputStyle}`}
       name={name}
+      value={formik.values[name]}
+      onChange={formik.handleChange}
+      onFocus={formik.handleBlur}
       {...props}
     />
-    <span className={`field__error ${errorStyle}`}>{errtext}</span>
+    <span className={`field__error ${errorStyle}`}>
+      {formik.touched[name] ? formik.errors[name] : ''}
+    </span>
   </>
 );
 
