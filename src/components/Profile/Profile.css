@@ -40,6 +40,10 @@
   outline: none;
 }
 
+.profile__input_onError {
+  color: #ee3465;
+}
+
 .profile__error {
   padding-bottom: 2px;
   text-align: right;

@@ -1,7 +1,6 @@
 import './SearchForm.css';
 import FilterCheckbox from '../FilterCheckbox/FilterCheckbox';
 import Field from '../Field/Field';
-import { useEffect, useState } from 'react';
 import useForm from '../../hooks/useForm';
 
 const SearchForm = (props) => {

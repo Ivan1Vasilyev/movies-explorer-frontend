@@ -16,13 +16,14 @@ import SavedMovies from '../SavedMovies/SavedMovies';
 import Main from '../Main/Main';
 import { moviesData } from '../../utils/constants';
 import { useState } from 'react';
+import * as api from '../../utils/api';
 
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   return (
     <Page>
       <Routes>
-        <Route exact path="/" element={<Main />} />
+        <Route exact path="/" element={<Main loggedIn={loggedIn} />} />
         <Route path={ROUTE_SIGN_UP} element={<Register />} />
         <Route path={ROUTE_SIGN_IN} element={<Login />} />
         <Route path={ROUTE_PROFILE} element={<Profile />} />

@@ -7,10 +7,10 @@ import Techs from '../Techs/Techs';
 import AboutMe from '../AboutMe/AboutMe';
 import Portfolio from '../Portfolio/Portfolio';
 
-const Main = () => (
+const Main = ({ loggedIn }) => (
   <>
     <section className="main main_place_promo">
-      <Header place="main" />
+      <Header place="main" loggedIn={loggedIn} />
       <Promo />
     </section>
     <AboutProject />
