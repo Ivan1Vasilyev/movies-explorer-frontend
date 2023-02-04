@@ -6,7 +6,7 @@ import Footer from '../Footer/Footer';
 import Preloader from '../Preloader/Preloader';
 import { useEffect, useState } from 'react';
 
-const Movies = ({ moviesData, isButtonNeed, isOwner, place }) => {
+const Movies = ({ moviesData, isButtonNeed, isOwner, place, ...props }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -16,7 +16,7 @@ const Movies = ({ moviesData, isButtonNeed, isOwner, place }) => {
 
   return (
     <>
-      <Header loggedIn={true} place={place || 'movies'} />
+      <Header loggedIn={props.loggedIn} place={place || 'movies'} />
       <main className="movies page__element">
         <SearchForm />
         {loading ? (

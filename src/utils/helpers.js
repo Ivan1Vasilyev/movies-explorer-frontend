@@ -8,3 +8,10 @@ export const debounce = (set) => {
     setTimeout(() => (isCooldown = false), 100);
   };
 };
+
+export const handleError = async (err, message) => {
+  const error = await err;
+  if (message) console.log(message);
+  console.log(error);
+  return error.message;
+};

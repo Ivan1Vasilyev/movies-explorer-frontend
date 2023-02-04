@@ -26,6 +26,7 @@
   text-align: right;
   font-size: 11px;
   line-height: 1.18;
+  color: #fff;
   margin-top: 16px;
   padding: 2px 0;
   border: none;
@@ -137,6 +138,10 @@
   .profile__submit-button_disabled:hover {
     box-shadow: none;
     cursor: default;
+    transform: none;
+  }
+  .profile__submit-button_disabled:hover:before {
+    left: -100%;
   }
   .profile__link:hover {
     transform: scale(1.1);
