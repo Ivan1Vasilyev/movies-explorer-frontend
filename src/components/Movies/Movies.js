@@ -5,24 +5,42 @@ import Header from '../Header/Header';
 import Footer from '../Footer/Footer';
 import Preloader from '../Preloader/Preloader';
 import { useEffect, useState } from 'react';
+import { wordFilter, dataFilter } from '../../utils/helpers';
 
-const Movies = ({ moviesData, isButtonNeed, isOwner, place, ...props }) => {
+const Movies = ({ isButtonNeed, isOwner, place, ...props }) => {
   const [loading, setLoading] = useState(false);
+  const [filterOn, setFilterOn] = useState(false);
+  const [keyWord, setKeyWord] = useState('');
+  const [foundMoviesList, setFoundMoviesList] = useState([]);
+
+  // useEffect(() => {
+  //   if (localStorage.has('last')) {
+  //     const config = JSON.parse(localStorage.get(currentUser._id));
+  //     setFilterOn(config.filterOn);
+  //     setResultMoviesList(config.list);
+  //     setKeyWord(config.keyWord);
+  //   }
+  // }, []);
 
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => setLoading(false), 3000);
-  }, []);
+    const getResult = async () => {
+      setLoading(true);
+      const allMovies = await props.getMovies();
+      setFoundMoviesList(allMovies.filter((item) => wordFilter(keyWord, item)).map(dataFilter));
+      setLoading(false);
+    };
+    if (keyWord !== '') getResult();
+  }, [keyWord]);
 
   return (
     <>
       <Header loggedIn={props.loggedIn} place={place || 'movies'} />
       <main className="movies page__element">
-        <SearchForm />
+        <SearchForm filterOn={filterOn} setFilterOn={setFilterOn} setKeyWord={setKeyWord} />
         {loading ? (
           <Preloader />
         ) : (
-          <MoviesCardList moviesData={moviesData} isButtonNeed={isButtonNeed} isOwner={isOwner} />
+          <MoviesCardList moviesData={foundMoviesList} isOwner={isOwner} />
         )}
       </main>
       <Footer />

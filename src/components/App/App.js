@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import Page from '../Page/Page';
 import Register from '../Register/Register';
 import Login from '../Login/Login';
@@ -16,15 +16,17 @@ import {
   ROUTE_MOVIES,
   ROUTE_SAVED_MOVIES,
 } from '../../utils/constants';
-import { moviesData } from '../../utils/constants';
-import { useEffect, useState } from 'react';
-import * as api from '../../utils/api';
+import { useCallback, useEffect, useState } from 'react';
+import * as MainApi from '../../utils/MainApi';
+import getMovies from '../../utils/MoviesApi';
 import { handleError } from '../../utils/helpers';
 
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   const authIn = (method) => async (userData) => {
     try {
@@ -32,19 +34,20 @@ const App = () => {
       setCurrentUser({ ...res });
       setLoggedIn(true);
       if (errorMessage) setErrorMessage('');
+      navigate(ROUTE_MOVIES);
     } catch (err) {
       const message = await handleError(err);
       setErrorMessage(message);
     }
   };
 
-  const register = authIn(api.register);
+  const register = authIn(MainApi.register);
 
-  const login = authIn(api.login);
+  const login = authIn(MainApi.login);
 
   const updateUser = async (data) => {
     try {
-      const res = await api.updateUser(data);
+      const res = await MainApi.updateUser(data);
       setCurrentUser((state) => ({ ...state, ...res }));
       if (errorMessage) setErrorMessage('');
     } catch (err) {
@@ -55,7 +58,7 @@ const App = () => {
 
   const logout = async () => {
     try {
-      await api.logout({ _id: currentUser._id });
+      await MainApi.logout({ _id: currentUser._id });
       setCurrentUser({});
       setLoggedIn(false);
     } catch (err) {
@@ -64,15 +67,26 @@ const App = () => {
     }
   };
 
-  const checkToken = async () => {
+  const getDefaultMovies = async () => {
     try {
-      const user = await api.getUserInfo();
+      const response = await getMovies();
+      return response;
+    } catch (err) {
+      const message = await handleError(err);
+      setErrorMessage(message);
+    }
+  };
+
+  const checkToken = useCallback(async () => {
+    try {
+      const user = await MainApi.getUserInfo();
       setCurrentUser(user);
       setLoggedIn(true);
+      navigate(pathname);
     } catch (err) {
       handleError(err, 'Ошибка проверки токена');
     }
-  };
+  }, [pathname]);
 
   useEffect(() => {
     checkToken();
@@ -93,7 +107,22 @@ const App = () => {
             element={<Login onSubmit={login} errorMessage={errorMessage} loggedIn={loggedIn} />}
           />
           <Route
-            exact
+            path={ROUTE_MOVIES}
+            element={
+              <ProtectedRoute
+                loggedIn={loggedIn}
+                component={Movies}
+                getMovies={getDefaultMovies}
+                isButtonNeed={true}
+                errorMessage={errorMessage}
+              />
+            }
+          />
+          <Route
+            path={ROUTE_SAVED_MOVIES}
+            element={<ProtectedRoute loggedIn={loggedIn} component={SavedMovies} isOwner={true} />}
+          />
+          <Route
             path={ROUTE_PROFILE}
             element={
               <ProtectedRoute
@@ -105,29 +134,6 @@ const App = () => {
               />
             }
           />
-          <Route
-            path={ROUTE_MOVIES}
-            element={
-              <ProtectedRoute
-                loggedIn={loggedIn}
-                component={Movies}
-                moviesData={moviesData}
-                isButtonNeed={true}
-              />
-            }
-          />
-          <Route
-            path={ROUTE_SAVED_MOVIES}
-            element={
-              <ProtectedRoute
-                loggedIn={loggedIn}
-                component={SavedMovies}
-                moviesData={moviesData.filter((_, i) => i < 3)}
-                isOwner={true}
-              />
-            }
-          />
-
           <Route exact path="/" element={<Main loggedIn={loggedIn} />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>

@@ -12,7 +12,7 @@ const Header = (props) => {
   useEffect(() => {
     if (!isMenuOpen) return;
 
-    const sizeListener = debounce(setIsMenuOpen);
+    const sizeListener = debounce(768, setIsMenuOpen, false);
     window.addEventListener('resize', sizeListener);
 
     return () => window.removeEventListener('resize', sizeListener);

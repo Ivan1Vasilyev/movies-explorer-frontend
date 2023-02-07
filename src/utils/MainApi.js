@@ -1,7 +1,7 @@
 const baseUrl = 'https://api.moovies.nomoredomains.rocks';
-const headers = { 'Content-Type': 'application/json' };
+export const headers = { 'Content-Type': 'application/json' };
 
-const responseHandler = (response) =>
+export const responseHandler = (response) =>
   response.ok ? response.json() : Promise.reject(response.json());
 
 const authFetch = (method, url) => async (data) => {

@@ -9,7 +9,6 @@ const errorMessages = {
   name: 'Имя может содержать только латиницу, кириллицу, пробел или дефис',
   email: 'Введите корректный email',
   password: 'Пароль должен содержать 4 символа или больше',
-  movie: 'Введите ключевое слово',
 };
 
 const validators = {
@@ -20,7 +19,6 @@ const validators = {
     .required(errorMessages.required),
   email: Yup.string().email(errorMessages.email).required(errorMessages.required),
   password: Yup.string().min(4, errorMessages.password).required(errorMessages.required),
-  movie: Yup.string().required(errorMessages.movie),
 };
 
 const useForm = (inputs, submitHandler) => {

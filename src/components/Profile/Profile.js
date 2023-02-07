@@ -3,8 +3,8 @@ import Field from '../Field/Field';
 import Header from '../Header/Header';
 import { Link } from 'react-router-dom';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
-import useForm from '../../hooks/useForm';
 import { useContext, useEffect } from 'react';
+import useForm from '../../hooks/useForm';
 import useErrorShielding from '../../hooks/useErrorShielding';
 
 const Profile = (props) => {

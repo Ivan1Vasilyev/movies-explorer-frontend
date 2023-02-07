@@ -1,9 +1,13 @@
-export const debounce = (set) => {
+export const debounce = (size, setter, argForBigScreen, argForSmallScreen) => {
   let isCooldown = false;
 
   return (e) => {
     if (isCooldown) return;
-    if (e.target.innerWidth > 768) set(false);
+    if (e.target.innerWidth > size) {
+      setter(argForBigScreen);
+    } else if (argForSmallScreen) {
+      setter(argForSmallScreen);
+    }
     isCooldown = true;
     setTimeout(() => (isCooldown = false), 100);
   };
@@ -15,3 +19,35 @@ export const handleError = async (err, message) => {
   console.log(error);
   return error.message;
 };
+
+export const parseDuration = (duration) => {
+  const hours = Math.floor(duration / 60);
+  const minutes = duration - hours * 60;
+  return hours ? (minutes === 0 ? `${hours}ч` : `${hours}ч ${minutes}м`) : `${minutes}м`;
+};
+
+export const wordFilter = (word, movie) => {
+  const { country, director, description, nameRU, nameEN } = movie;
+  word = word.toLowerCase();
+  return (
+    country.toLowerCase().includes(word) ||
+    director.toLowerCase().includes(word) ||
+    description.toLowerCase().includes(word) ||
+    nameEN.toLowerCase().includes(word) ||
+    nameRU.toLowerCase().includes(word)
+  );
+};
+
+export const dataFilter = (data) => ({
+  country: data.country,
+  director: data.director,
+  duration: data.duration,
+  description: data.description,
+  image: `https://api.nomoreparties.co/${data.image.url}`,
+  trailerLink: data.trailerLink,
+  thumbnail: `https://api.nomoreparties.co/${data.image.formats.thumbnail.url}`,
+  movieId: data.id,
+  nameRU: data.nameRU,
+  nameEN: data.nameEN,
+  isLiked: false,
+});

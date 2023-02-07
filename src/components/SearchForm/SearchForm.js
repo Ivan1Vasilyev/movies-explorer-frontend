@@ -1,19 +1,29 @@
 import './SearchForm.css';
 import FilterCheckbox from '../FilterCheckbox/FilterCheckbox';
-import Field from '../Field/Field';
-import useForm from '../../hooks/useForm';
+import useSearchForm from '../../hooks/useSearchForm';
+import { useCallback } from 'react';
 
 const SearchForm = (props) => {
-  const { formik } = useForm({ movie: '' }, props.onSubmit);
+  const { value, isSearchEmpty, handleChange, handleSubmit } = useSearchForm(props.setKeyWord);
+
+  const toggleFilter = useCallback((e) => props.setFilterOn(e.target.checked), []);
 
   return (
-    <section className="searchform">
-      <Field placeholder="Фильм" className="searchform__input" name="movie" formik={formik} />
-      <button className="searchform__submit" type="button" aria-label="Найти">
+    <form className="searchform" onSubmit={handleSubmit}>
+      <input
+        name="movie"
+        type="text"
+        value={value}
+        onChange={handleChange}
+        placeholder="Найти фильмы по ключевому слову"
+        className="searchform__input"
+      />
+      <span className="searchform__error">{isSearchEmpty && 'Введите ключевое слово'}</span>
+      <button className="searchform__submit" type="submit" aria-label="Найти">
         Найти
       </button>
-      <FilterCheckbox />
-    </section>
+      <FilterCheckbox toggler={toggleFilter} value={props.filterOn} />
+    </form>
   );
 };
 export default SearchForm;
