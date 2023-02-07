@@ -28,13 +28,13 @@ export const parseDuration = (duration) => {
 
 export const wordFilter = (word, movie) => {
   const { country, director, description, nameRU, nameEN } = movie;
-  word = word.toLowerCase();
+  const search = new RegExp(word, 'i');
   return (
-    country.toLowerCase().includes(word) ||
-    director.toLowerCase().includes(word) ||
-    description.toLowerCase().includes(word) ||
-    nameEN.toLowerCase().includes(word) ||
-    nameRU.toLowerCase().includes(word)
+    search.test(country) ||
+    search.test(director) ||
+    search.test(description) ||
+    search.test(nameRU) ||
+    search.test(nameEN)
   );
 };
 

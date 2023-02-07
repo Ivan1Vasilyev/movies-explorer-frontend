@@ -38,7 +38,9 @@
 }
 
 .form__input:-webkit-autofill {
-  transition-delay: 36000s;
+  transition: background-color 600000s 0s;
+  -webkit-text-fill-color: #fff;
+  caret-color: #fff;
 }
 
 .form__input::placeholder {

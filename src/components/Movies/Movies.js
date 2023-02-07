@@ -12,15 +12,22 @@ const Movies = ({ isButtonNeed, isOwner, place, ...props }) => {
   const [filterOn, setFilterOn] = useState(false);
   const [keyWord, setKeyWord] = useState('');
   const [foundMoviesList, setFoundMoviesList] = useState([]);
+  const [shortMoviesList, setShortMoviesList] = useState([]);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // useEffect(() => {
-  //   if (localStorage.has('last')) {
-  //     const config = JSON.parse(localStorage.get(currentUser._id));
-  //     setFilterOn(config.filterOn);
-  //     setResultMoviesList(config.list);
-  //     setKeyWord(config.keyWord);
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (filterOn) {
+      setShortMoviesList(foundMoviesList.filter((movie) => movie.duration < 41));
+    } else {
+      setShortMoviesList([]);
+    }
+    // if (localStorage.has('last')) {
+    //   const config = JSON.parse(localStorage.get(currentUser._id));
+    //   setFilterOn(config.filterOn);
+    //   setResultMoviesList(config.list);
+    //   setKeyWord(config.keyWord);
+    // }
+  }, [filterOn, foundMoviesList]);
 
   useEffect(() => {
     const getResult = async () => {
@@ -28,6 +35,7 @@ const Movies = ({ isButtonNeed, isOwner, place, ...props }) => {
       const allMovies = await props.getMovies();
       setFoundMoviesList(allMovies.filter((item) => wordFilter(keyWord, item)).map(dataFilter));
       setLoading(false);
+      setIsSubmitted(true);
     };
     if (keyWord !== '') getResult();
   }, [keyWord]);
@@ -40,7 +48,11 @@ const Movies = ({ isButtonNeed, isOwner, place, ...props }) => {
         {loading ? (
           <Preloader />
         ) : (
-          <MoviesCardList moviesData={foundMoviesList} isOwner={isOwner} />
+          <MoviesCardList
+            moviesData={filterOn ? shortMoviesList : foundMoviesList}
+            isOwner={isOwner}
+            isSubmitted={isSubmitted}
+          />
         )}
       </main>
       <Footer />

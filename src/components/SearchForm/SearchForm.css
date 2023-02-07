@@ -36,7 +36,7 @@
 }
 
 .searchform__input:-webkit-autofill {
-  transition-delay: 36000s;
+  transition: background-color 600000s 0s, color 600000s 0s;
 }
 
 .searchform__error {

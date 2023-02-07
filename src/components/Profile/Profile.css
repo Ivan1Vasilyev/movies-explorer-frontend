@@ -41,8 +41,19 @@
   outline: none;
 }
 
+.profile__input:-webkit-autofill {
+  transition: background-color 600000s 0s;
+  -webkit-text-fill-color: #fff;
+  caret-color: #fff;
+}
+
 .profile__input_onError {
   color: #ee3465;
+}
+
+.profile__input_onError:-webkit-autofill {
+  -webkit-text-fill-color: #ee3465;
+  caret-color: #ee3465;
 }
 
 .profile__error {
