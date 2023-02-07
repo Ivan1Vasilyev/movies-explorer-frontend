@@ -1,0 +1,21 @@
+.title {
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.22;
+  letter-spacing: -0.04em;
+  margin: 0;
+  padding-bottom: 22px;
+  width: 100%;
+  border-bottom: 1px solid #dadada;
+}
+
+@media screen and (max-width: 680px) {
+  .title {
+    font-size: 18px;
+    line-height: 1.22;
+    padding-bottom: 26px;
+  }
+  .title_mutated {
+    border-bottom: 1px solid #000;
+  }
+}

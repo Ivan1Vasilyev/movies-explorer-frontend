@@ -1,0 +1,19 @@
+.logo {
+  line-height: 0;
+  display: inline-block;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  transition: 0.3s ease-in-out;
+}
+
+.logo__image {
+  width: 100%;
+  height: 100%;
+}
+
+@media (any-hover: hover) {
+  .logo:hover {
+    transform: scale(1.1) rotate(360deg);
+  }
+}
