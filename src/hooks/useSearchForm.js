@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-const useSearchForm = (setKeyWord) => {
-  const [value, setValue] = useState('');
+const useSearchForm = (setKeyWord, keyWord) => {
+  const [value, setValue] = useState(keyWord);
   const [isSearchEmpty, setIsSearchEmpty] = useState(false);
 
   const handleChange = (e) => {
@@ -19,7 +19,7 @@ const useSearchForm = (setKeyWord) => {
     setKeyWord(value);
   };
 
-  return { value, isSearchEmpty, handleChange, handleSubmit };
+  return { value, setValue, isSearchEmpty, handleChange, handleSubmit };
 };
 
 export default useSearchForm;

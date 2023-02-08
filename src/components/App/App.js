@@ -77,6 +77,8 @@ const App = () => {
     }
   };
 
+  const addMovie = useCallback(() => console.log('add'), []);
+
   const checkToken = useCallback(async () => {
     try {
       const user = await MainApi.getUserInfo();
@@ -112,8 +114,8 @@ const App = () => {
               <ProtectedRoute
                 loggedIn={loggedIn}
                 component={Movies}
+                addMovie={addMovie}
                 getMovies={getDefaultMovies}
-                isButtonNeed={true}
                 errorMessage={errorMessage}
               />
             }

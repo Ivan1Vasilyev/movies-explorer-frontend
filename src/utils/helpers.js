@@ -50,4 +50,5 @@ export const dataFilter = (data) => ({
   nameRU: data.nameRU,
   nameEN: data.nameEN,
   isLiked: false,
+  // owner: null,
 });
