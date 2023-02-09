@@ -19,7 +19,7 @@ const useSearchForm = (setKeyWord, keyWord) => {
     setKeyWord(value);
   };
 
-  return { value, setValue, isSearchEmpty, handleChange, handleSubmit };
+  return { value, isSearchEmpty, handleChange, handleSubmit };
 };
 
 export default useSearchForm;

@@ -49,16 +49,7 @@ const MoviesCardList = ({ moviesData, isSubmitted, addMovie }) => {
           }`}
         >
           {resultMoviesList.map((item) => (
-            <MoviesCard
-              key={item.movieId}
-              // name={item.nameRU}
-              // image={item.image}
-              // duration={item.duration}
-              // isLiked={item.isLiked}
-              // owner={item.owner}
-              addMovie={addMovie}
-              data={item}
-            />
+            <MoviesCard key={item.movieId} addMovie={addMovie} data={item} />
           ))}
         </ul>
       ) : (
