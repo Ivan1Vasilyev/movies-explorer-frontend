@@ -8,7 +8,7 @@ import { useContext } from 'react';
 
 const MoviesCard = ({ data, addMovie, isOwner }) => {
   const currentUser = useContext(CurrentUserContext);
-  const isLiked = data.owner === currentUser._id;
+  const isLiked = data.owners.includes(currentUser._id);
 
   return (
     <li className="movie">

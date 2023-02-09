@@ -49,6 +49,6 @@ export const dataFilter = (data) => ({
   movieId: data.id,
   nameRU: data.nameRU,
   nameEN: data.nameEN,
-  isLiked: false,
-  // owner: null,
+  year: data.year,
+  owners: [],
 });
