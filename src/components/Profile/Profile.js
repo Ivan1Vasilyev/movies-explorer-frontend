@@ -42,13 +42,7 @@ const Profile = (props) => {
         />
 
         <div className="profile__submit-area">
-          <p
-            className={`profile__submit-info ${
-              props.errorMessage && 'profile__submit-info_onError'
-            }`}
-          >
-            {isSubmitted && (props.errorMessage || 'Данные успешно обновлены')}
-          </p>
+          <p className="profile__submit-error">{isSubmitted && props.errorMessage}</p>
           <button
             className={`profile__submit-button ${disabled && 'profile__submit-button_disabled'}`}
             type="submit"

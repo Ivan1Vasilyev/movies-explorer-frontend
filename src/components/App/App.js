@@ -77,36 +77,7 @@ const App = () => {
     }
   };
 
-  const addMovie = async (movie) => {
-    try {
-      if (movie.owners.includes(currentUser._id)) {
-        await MainApi.deleteMovie(currentUser._id);
-        movie.owners.filter((m) => m !== currentUser._id);
-        return movie;
-      } else {
-        movie.owners.push(currentUser._id);
-        await MainApi.addMovie({
-          country: movie.country,
-          director: movie.director,
-          duration: movie.duration,
-          description: movie.description,
-          image: movie.image,
-          trailerLink: movie.trailerLink,
-          thumbnail: movie.thumbnail,
-          movieId: movie.movieId,
-          nameRU: movie.nameRU,
-          nameEN: movie.nameEN,
-          year: movie.year,
-          owner: currentUser._id,
-        });
-      }
-      console.log(movie);
-      return movie;
-    } catch (err) {
-      const message = await handleError(err);
-      setErrorMessage(message);
-    }
-  };
+  const addMovie = useCallback(() => console.log('add'), []);
 
   const checkToken = useCallback(async () => {
     try {

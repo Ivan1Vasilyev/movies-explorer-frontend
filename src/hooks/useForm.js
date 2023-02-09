@@ -15,7 +15,7 @@ const validators = {
   name: Yup.string()
     .min(2, errorMessages.min)
     .max(30, errorMessages.max)
-    .matches(/^[-_\sa-zа-яё]+$/i, errorMessages.name)
+    .matches(/^[-_\sa-zа-я]+$/i, errorMessages.name)
     .required(errorMessages.required),
   email: Yup.string().email(errorMessages.email).required(errorMessages.required),
   password: Yup.string().min(4, errorMessages.password).required(errorMessages.required),

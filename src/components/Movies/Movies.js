@@ -5,7 +5,7 @@ import Header from '../Header/Header';
 import Footer from '../Footer/Footer';
 import Preloader from '../Preloader/Preloader';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { wordFilter, dataFilter } from '../../utils/helpers';
 
 const Movies = ({ isOwner, place, ...props }) => {
@@ -16,17 +16,18 @@ const Movies = ({ isOwner, place, ...props }) => {
   const [foundMoviesList, setFoundMoviesList] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const addMovie = async (movie) => {
-    const response = await props.addMovie(movie);
-    const allMovies = JSON.parse(localStorage.getItem('allMovies'));
-    localStorage.setItem(
-      'allMovies',
-      JSON.stringify(allMovies.map((m) => (m.movieId === response.movieId ? response : m))),
-    );
+  const addMovie = useCallback((movie) => {
+    props.addMovie();
+    const addingMovie = movie;
+    if (addingMovie.owner === currentUser._id) {
+      addingMovie.owner = null;
+    } else {
+      addingMovie.owner = currentUser._id;
+    }
     setFoundMoviesList((state) =>
-      state.map((m) => (m.movieId === response.movieId ? response : m)),
+      state.map((m) => (m.movieId === movie.movieId ? addingMovie : m)),
     );
-  };
+  }, []);
 
   useEffect(() => {
     if (localStorage.getItem(currentUser._id)) {
@@ -40,13 +41,12 @@ const Movies = ({ isOwner, place, ...props }) => {
     const getResult = async () => {
       if (!localStorage.getItem('allMovies')) {
         setLoading(true);
-        const defaultMovies = await props.getMovies();
-        localStorage.setItem('allMovies', JSON.stringify(defaultMovies.map(dataFilter)));
+        localStorage.setItem('allMovies', JSON.stringify(await props.getMovies()));
         setLoading(false);
       }
 
       const allMovies = JSON.parse(localStorage.getItem('allMovies'));
-      setFoundMoviesList(allMovies.filter((item) => wordFilter(keyWord, item)));
+      setFoundMoviesList(allMovies.filter((item) => wordFilter(keyWord, item)).map(dataFilter));
 
       if (filterOn) {
         setFoundMoviesList((state) => state.filter((movie) => movie.duration < 41));
