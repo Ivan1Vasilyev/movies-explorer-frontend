@@ -72,11 +72,14 @@
   align-items: center;
 }
 
-.profile__submit-error {
-  color: #ff004c;
+.profile__submit-info {
   font-size: 11px;
   line-height: 1.18;
   margin: 1px auto 17px;
+}
+
+.profile__submit-info_onErro {
+  color: #ff004c;
 }
 
 .profile__submit-button {

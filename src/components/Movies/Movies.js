@@ -6,31 +6,27 @@ import Footer from '../Footer/Footer';
 import Preloader from '../Preloader/Preloader';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import { useContext, useEffect, useState } from 'react';
-import { wordFilter, dataFilter } from '../../utils/helpers';
+import { wordFilter, durationFilter, getAllMovies } from '../../utils/helpers';
+import { ALL_MOVIES_KEY } from '../../utils/constants';
 
-const Movies = ({ isOwner, place, ...props }) => {
+const Movies = (props) => {
   const currentUser = useContext(CurrentUserContext);
+  const storageKey = currentUser._id;
   const [loading, setLoading] = useState(false);
   const [filterOn, setFilterOn] = useState(false);
   const [keyWord, setKeyWord] = useState('');
   const [foundMoviesList, setFoundMoviesList] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const addMovie = async (movie) => {
-    const response = await props.addMovie(movie);
-    const allMovies = JSON.parse(localStorage.getItem('allMovies'));
-    localStorage.setItem(
-      'allMovies',
-      JSON.stringify(allMovies.map((m) => (m.movieId === response.movieId ? response : m))),
-    );
-    setFoundMoviesList((state) =>
-      state.map((m) => (m.movieId === response.movieId ? response : m)),
-    );
+  const handleLikeMovie = async (movie) => {
+    const response = await props.handleLikeMovie(movie);
+
+    setFoundMoviesList(response.filter((item) => wordFilter(keyWord, item)));
   };
 
   useEffect(() => {
-    if (localStorage.getItem(currentUser._id)) {
-      const config = JSON.parse(localStorage.getItem(currentUser._id));
+    if (localStorage.getItem(storageKey)) {
+      const config = JSON.parse(localStorage.getItem(storageKey));
       setFilterOn(config.filterOn);
       setKeyWord(config.keyWord);
     }
@@ -38,23 +34,13 @@ const Movies = ({ isOwner, place, ...props }) => {
 
   useEffect(() => {
     const getResult = async () => {
-      if (!localStorage.getItem('allMovies')) {
-        setLoading(true);
-        const defaultMovies = await props.getMovies();
-        localStorage.setItem('allMovies', JSON.stringify(defaultMovies.map(dataFilter)));
-        setLoading(false);
-      }
+      const allMovies = await getAllMovies(setLoading, props.getMovies, ALL_MOVIES_KEY);
 
-      const allMovies = JSON.parse(localStorage.getItem('allMovies'));
       setFoundMoviesList(allMovies.filter((item) => wordFilter(keyWord, item)));
-
-      if (filterOn) {
-        setFoundMoviesList((state) => state.filter((movie) => movie.duration < 41));
-      }
       setIsSubmitted(true);
 
       localStorage.setItem(
-        currentUser._id,
+        storageKey,
         JSON.stringify({
           filterOn,
           keyWord,
@@ -66,7 +52,7 @@ const Movies = ({ isOwner, place, ...props }) => {
 
   return (
     <>
-      <Header loggedIn={props.loggedIn} place={place || 'movies'} />
+      <Header loggedIn={props.loggedIn} place={'movies'} />
       <main className="movies page__element">
         <SearchForm
           filterOn={filterOn}
@@ -79,9 +65,8 @@ const Movies = ({ isOwner, place, ...props }) => {
           <Preloader />
         ) : (
           <MoviesCardList
-            addMovie={addMovie}
-            moviesData={foundMoviesList}
-            isOwner={isOwner}
+            handleLikeMovie={handleLikeMovie}
+            moviesData={filterOn ? foundMoviesList.filter(durationFilter) : foundMoviesList}
             isSubmitted={isSubmitted}
           />
         )}

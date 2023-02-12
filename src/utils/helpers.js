@@ -38,6 +38,8 @@ export const wordFilter = (word, movie) => {
   );
 };
 
+export const durationFilter = (movie) => movie.duration < 41;
+
 export const dataFilter = (data) => ({
   country: data.country,
   director: data.director,
@@ -52,3 +54,34 @@ export const dataFilter = (data) => ({
   year: data.year,
   owners: [],
 });
+
+export const getAllMovies = async (setLoading, getMovies, key) => {
+  let allMovies = JSON.parse(localStorage.getItem(key)) || [];
+
+  if (!allMovies.length) {
+    setLoading(true);
+    const defaultMovies = await getMovies();
+    allMovies = defaultMovies.map(dataFilter);
+    localStorage.setItem(key, JSON.stringify(allMovies));
+    setLoading(false);
+  }
+
+  return allMovies;
+};
+
+export const adaptDataToDB = (movie, id) => ({
+  country: movie.country,
+  director: movie.director,
+  duration: movie.duration,
+  description: movie.description,
+  image: movie.image,
+  trailerLink: movie.trailerLink,
+  thumbnail: movie.thumbnail,
+  movieId: movie.movieId,
+  nameRU: movie.nameRU,
+  nameEN: movie.nameEN,
+  year: movie.year,
+  owner: id,
+});
+
+export const getAllSavedMoviesKey = (id) => `${id}all`;

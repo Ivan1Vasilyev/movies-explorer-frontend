@@ -1,14 +1,14 @@
 import './MoviesCardList.css';
 import MoviesCard from '../MoviesCard/MoviesCard';
 import { debounce } from '../../utils/helpers';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-const MoviesCardList = ({ moviesData, isSubmitted, addMovie }) => {
+const MoviesCardList = ({ moviesData, isSubmitted, handleLikeMovie, deleteMovie, isSaved }) => {
   const [resultMoviesList, setResultMoviesList] = useState([]);
   const [limiter, setLimiter] = useState(7);
   const [addCounter, setAddCounter] = useState(7);
 
-  const addMoviesClick = () => setLimiter((state) => state + addCounter);
+  const addMoviesClick = useCallback(() => setLimiter((state) => state + addCounter), [addCounter]);
 
   const setter = (states) => {
     setLimiter(states[0]);
@@ -16,12 +16,13 @@ const MoviesCardList = ({ moviesData, isSubmitted, addMovie }) => {
   };
 
   useEffect(() => {
-    if (!moviesData.length) return;
+    if (isSaved || !moviesData.length) return;
 
     setResultMoviesList(moviesData.filter((_, index) => index < limiter));
   }, [moviesData, limiter]);
 
   useEffect(() => {
+    if (isSaved) return;
     const { length } = resultMoviesList;
 
     if (!length && window.innerWidth < 481) {
@@ -43,31 +44,35 @@ const MoviesCardList = ({ moviesData, isSubmitted, addMovie }) => {
   return (
     <section className="movies-list">
       {moviesData.length ? (
-        <ul
-          className={`movies-list__container ${
-            limiter > moviesData.length && 'movies-list__container_full'
-          }`}
-        >
-          {resultMoviesList.map((item) => (
-            <MoviesCard
-              key={item.movieId}
-              // name={item.nameRU}
-              // image={item.image}
-              // duration={item.duration}
-              // isLiked={item.isLiked}
-              // owner={item.owner}
-              addMovie={addMovie}
-              data={item}
-            />
-          ))}
-        </ul>
+        <>
+          <ul
+            className={`movies-list__container ${
+              limiter > moviesData.length && 'movies-list__container_full'
+            }`}
+          >
+            {isSaved
+              ? moviesData.map((item) => (
+                  <MoviesCard
+                    key={item._id}
+                    deleteMovie={deleteMovie}
+                    data={item}
+                    isSaved={isSaved}
+                  />
+                ))
+              : resultMoviesList.map((item) => (
+                  <MoviesCard key={item.movieId} handleLikeMovie={handleLikeMovie} data={item} />
+                ))}
+          </ul>
+          {isSaved
+            ? null
+            : limiter < moviesData.length && (
+                <button className="movies-list__button" onClick={addMoviesClick}>
+                  Ещё
+                </button>
+              )}
+        </>
       ) : (
         <p className="movies-list__empty">{isSubmitted && 'Ничего не найдено'}</p>
-      )}
-      {limiter < moviesData.length && (
-        <button className="movies-list__button" onClick={addMoviesClick}>
-          Ещё
-        </button>
       )}
     </section>
   );

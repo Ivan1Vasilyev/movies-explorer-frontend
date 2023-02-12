@@ -6,9 +6,9 @@ import { parseDuration } from '../../utils/helpers';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import { useContext } from 'react';
 
-const MoviesCard = ({ data, addMovie, isOwner }) => {
+const MoviesCard = ({ data, handleLikeMovie, deleteMovie, isSaved }) => {
   const currentUser = useContext(CurrentUserContext);
-  const isLiked = data.owners.includes(currentUser._id);
+  const isLiked = isSaved ? false : data.owners?.includes(currentUser._id);
 
   return (
     <li className="movie">
@@ -17,11 +17,11 @@ const MoviesCard = ({ data, addMovie, isOwner }) => {
         <p className="movie__duration">{parseDuration(data.duration)}</p>
         <img
           className={`movie__button ${
-            isOwner ? 'movie__button_state_delete' : 'movie__button_state_add'
+            isSaved ? 'movie__button_state_delete' : 'movie__button_state_add'
           }`}
-          src={isOwner ? deleteIcon : isLiked ? liked : like}
-          alt={isOwner ? 'Удалить из коллекции' : 'Добавить в коллекцию'}
-          onClick={() => addMovie(data)}
+          src={isSaved ? deleteIcon : isLiked ? liked : like}
+          alt={isSaved ? 'Удалить из коллекции' : 'Добавить в коллекцию'}
+          onClick={handleLikeMovie ? () => handleLikeMovie(data) : () => deleteMovie(data)}
         />
       </div>
       <img className="movie__poster" src={data.image} alt="Постер к фильму" />

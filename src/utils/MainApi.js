@@ -4,11 +4,20 @@ export const headers = { 'Content-Type': 'application/json' };
 export const responseHandler = (response) =>
   response.ok ? response.json() : Promise.reject(response.json());
 
-const multiFetch = (method, url) => async (data) => {
-  const response = await fetch(`${baseUrl}/${url}`, {
+const multiFetch = (method, route) => async (data) => {
+  const response = await fetch(`${baseUrl}/${route}`, {
     method,
     headers,
     body: JSON.stringify(data),
+    credentials: 'include',
+  });
+  return responseHandler(response);
+};
+
+const multiFetchWithoutBody = (method, route) => async (id) => {
+  const response = await fetch(`${baseUrl}/${route}${id ? `/${id}` : ''}`, {
+    method,
+    headers,
     credentials: 'include',
   });
   return responseHandler(response);
@@ -22,22 +31,10 @@ export const logout = multiFetch('POST', 'signout');
 
 export const updateUser = multiFetch('PATCH', 'users/me');
 
-export const getUserInfo = async () => {
-  const response = await fetch(`${baseUrl}/users/me`, {
-    method: 'GET',
-    headers,
-    credentials: 'include',
-  });
-  return responseHandler(response);
-};
+export const getUserInfo = multiFetchWithoutBody('GET', 'users/me');
+
+export const getMovies = multiFetchWithoutBody('GET', 'movies');
 
 export const addMovie = multiFetch('POST', 'movies');
 
-export const deleteMovie = async (id) => {
-  const response = await fetch(`${baseUrl}/movies/${id}`, {
-    method: 'DELETE',
-    headers,
-    credentials: 'include',
-  });
-  return responseHandler(response);
-};
+export const deleteMovie = multiFetchWithoutBody('DELETE', 'movies');

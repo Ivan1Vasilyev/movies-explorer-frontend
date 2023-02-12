@@ -19,7 +19,7 @@ const Navigation = ({ loggedIn, isOpen, onClose, place }) => {
   });
 
   useEffect(() => {
-    if (place) setCurrentPlace((state) => ({ ...state, [place]: true }));
+    if (place) setCurrentPlace({ [place]: true });
   }, [place]);
 
   return (

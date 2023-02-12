@@ -15,11 +15,12 @@ import {
   ROUTE_PROFILE,
   ROUTE_MOVIES,
   ROUTE_SAVED_MOVIES,
+  ALL_MOVIES_KEY,
 } from '../../utils/constants';
 import { useCallback, useEffect, useState } from 'react';
 import * as MainApi from '../../utils/MainApi';
 import getMovies from '../../utils/MoviesApi';
-import { handleError } from '../../utils/helpers';
+import { handleError, dataFilter, adaptDataToDB } from '../../utils/helpers';
 
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -77,34 +78,79 @@ const App = () => {
     }
   };
 
-  const addMovie = async (movie) => {
+  const getSavedMovies = async () => {
     try {
-      if (movie.owners.includes(currentUser._id)) {
-        await MainApi.deleteMovie(movie._id);
-        movie.owners = movie.owners.filter((m) => m !== currentUser._id);
-      } else {
-        movie.owners.push(currentUser._id);
-        const response = await MainApi.addMovie({
-          country: movie.country,
-          director: movie.director,
-          duration: movie.duration,
-          description: movie.description,
-          image: movie.image,
-          trailerLink: movie.trailerLink,
-          thumbnail: movie.thumbnail,
-          movieId: movie.movieId,
-          nameRU: movie.nameRU,
-          nameEN: movie.nameEN,
-          year: movie.year,
-          owner: currentUser._id,
-        });
-        movie._id = response._id;
-      }
+      const response = await MainApi.getMovies();
+      return response;
+    } catch (err) {
+      const message = await handleError(err);
+      setErrorMessage(message);
+    }
+  };
+
+  const deleteMovie = async (movie) => {
+    try {
+      await MainApi.deleteMovie(movie._id);
+      movie.owners = movie.owners.filter((m) => m !== currentUser._id);
       return movie;
     } catch (err) {
       const message = await handleError(err);
       setErrorMessage(message);
     }
+  };
+
+  const deleteSavedMovie = async (movie) => {
+    try {
+      const deletingMovie = await MainApi.deleteMovie(movie._id);
+      let allMovies = JSON.parse(localStorage.getItem(ALL_MOVIES_KEY)) || [];
+
+      if (!allMovies.length) {
+        const defaultMovies = await getMovies();
+        allMovies = defaultMovies.map(dataFilter);
+      }
+
+      const movieToChange = allMovies.find((item) => item.movieId === deletingMovie.movieId);
+      console.log(movieToChange);
+      movieToChange.owners = movieToChange.owners.filter((m) => m !== currentUser._id);
+      console.log(movieToChange);
+
+      localStorage.setItem(
+        ALL_MOVIES_KEY,
+        JSON.stringify(
+          allMovies.map((m) => (m.movieId === movieToChange.movieId ? movieToChange : m)),
+        ),
+      );
+      return deletingMovie;
+    } catch (err) {
+      const message = await handleError(err);
+      setErrorMessage(message);
+    }
+  };
+
+  const addMovie = async (movie) => {
+    try {
+      movie.owners.push(currentUser._id);
+      const response = await MainApi.addMovie(adaptDataToDB(movie, currentUser._id));
+      movie._id = response._id;
+      return movie;
+    } catch (err) {
+      const message = await handleError(err);
+      setErrorMessage(message);
+    }
+  };
+
+  const handleLikeMovie = async (movie) => {
+    const response = movie.owners.includes(currentUser._id)
+      ? await deleteMovie(movie)
+      : await addMovie(movie);
+
+    const newAllMovies = JSON.parse(localStorage.getItem(ALL_MOVIES_KEY)).map((m) =>
+      m.movieId === response.movieId ? response : m,
+    );
+
+    localStorage.setItem(ALL_MOVIES_KEY, JSON.stringify(newAllMovies));
+
+    return newAllMovies;
   };
 
   const checkToken = useCallback(async () => {
@@ -142,7 +188,7 @@ const App = () => {
               <ProtectedRoute
                 loggedIn={loggedIn}
                 component={Movies}
-                addMovie={addMovie}
+                handleLikeMovie={handleLikeMovie}
                 getMovies={getDefaultMovies}
                 errorMessage={errorMessage}
               />
@@ -150,7 +196,15 @@ const App = () => {
           />
           <Route
             path={ROUTE_SAVED_MOVIES}
-            element={<ProtectedRoute loggedIn={loggedIn} component={SavedMovies} isOwner={true} />}
+            element={
+              <ProtectedRoute
+                loggedIn={loggedIn}
+                component={SavedMovies}
+                getSavedMovies={getSavedMovies}
+                deleteMovie={deleteSavedMovie}
+                isOwner={true}
+              />
+            }
           />
           <Route
             path={ROUTE_PROFILE}
