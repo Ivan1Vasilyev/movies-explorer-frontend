@@ -2,11 +2,18 @@ import './MoviesCardList.css';
 import MoviesCard from '../MoviesCard/MoviesCard';
 import { debounce } from '../../utils/helpers';
 import { useCallback, useEffect, useState } from 'react';
+import {
+  COUNT_BIG_SCREEN,
+  COUNT_SMALL_SCREEN,
+  STEP_BIG_SCREEN,
+  STEP_SMALL_SCREEN,
+  CHANGE_STEP_WIDTH,
+} from '../../utils/constants';
 
 const MoviesCardList = ({ moviesData, isSubmitted, handleLikeMovie, deleteMovie, isSaved }) => {
   const [resultMoviesList, setResultMoviesList] = useState([]);
-  const [limiter, setLimiter] = useState(7);
-  const [addCounter, setAddCounter] = useState(7);
+  const [limiter, setLimiter] = useState(COUNT_BIG_SCREEN);
+  const [addCounter, setAddCounter] = useState(STEP_BIG_SCREEN);
 
   const addMoviesClick = useCallback(() => setLimiter((state) => state + addCounter), [addCounter]);
 
@@ -25,16 +32,16 @@ const MoviesCardList = ({ moviesData, isSubmitted, handleLikeMovie, deleteMovie,
     if (isSaved) return;
     const { length } = resultMoviesList;
 
-    if (!length && window.innerWidth < 481) {
-      setter([5, 2]);
+    if (!length && window.innerWidth < CHANGE_STEP_WIDTH) {
+      setter([COUNT_SMALL_SCREEN, STEP_SMALL_SCREEN]);
       return;
     }
 
     const moviesSizeListener = debounce(
-      481,
+      CHANGE_STEP_WIDTH,
       setter,
-      [length < 7 ? 7 : length, 7],
-      [length === 7 ? 5 : length, 2],
+      [length < COUNT_BIG_SCREEN ? COUNT_BIG_SCREEN : length, STEP_BIG_SCREEN],
+      [length === COUNT_BIG_SCREEN ? COUNT_SMALL_SCREEN : length, STEP_SMALL_SCREEN],
     );
     window.addEventListener('resize', moviesSizeListener);
 
