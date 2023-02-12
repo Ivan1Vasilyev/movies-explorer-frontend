@@ -11,16 +11,16 @@ const Profile = (props) => {
   const currentUser = useContext(CurrentUserContext);
   const { formik, disabled } = useForm({ name: '', email: '' }, props.onSubmit);
   const { touched, errors, resetForm } = formik;
-  const { isSubmitted, handlerSubmit } = useErrorShielding(formik.handleSubmit);
+  const { isSubmitted, handleSubmit } = useErrorShielding(formik);
 
   useEffect(() => {
     resetForm({ values: { name: currentUser.name, email: currentUser.email } });
-  }, []);
+  }, [currentUser]);
 
   return (
     <>
       <Header loggedIn={props.loggedIn} place="account" />
-      <form className="profile page__element" onSubmit={handlerSubmit}>
+      <form className="profile page__element" onSubmit={handleSubmit}>
         <h2 className="profile__title">Привет, {currentUser.name}!</h2>
         <Field
           className={`profile__input ${touched.name && errors.name && 'profile__input_onError'}`}

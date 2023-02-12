@@ -123,7 +123,6 @@ const App = () => {
   };
 
   const handleLikeMovie = async (movie) => {
-    // localStorage.clear();
     const response = movie.owners.includes(currentUser._id)
       ? await deleteMovie(movie)
       : await addMovie(movie);

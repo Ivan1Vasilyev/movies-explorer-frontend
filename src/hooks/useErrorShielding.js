@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react';
 
-const useErrorShielding = (onSubmit) => {
+const useErrorShielding = (formik) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const { dirty, values } = formik;
 
-  const handlerSubmit = (data) => {
+  const handleSubmit = (data) => {
     setIsSubmitted(true);
-    return onSubmit(data);
+    return formik.handleSubmit(data);
   };
 
   useEffect(() => {
-    if (isSubmitted) setIsSubmitted(false);
-  }, []);
+    if (dirty) setIsSubmitted(false);
+  }, [values]);
 
-  return { isSubmitted, handlerSubmit };
+  return { isSubmitted, setIsSubmitted, handleSubmit };
 };
 
 export default useErrorShielding;

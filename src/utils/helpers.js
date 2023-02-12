@@ -28,6 +28,8 @@ export const parseDuration = (duration) => {
   return hours ? (minutes ? `${hours}ч ${minutes}м` : `${hours}ч`) : `${minutes}м`;
 };
 
+export const durationFilter = (movie) => movie.duration < 41;
+
 export const wordFilter = (word, movie) => {
   const { country, director, description, nameRU, nameEN } = movie;
   const search = new RegExp(word, 'i');
@@ -39,8 +41,6 @@ export const wordFilter = (word, movie) => {
     search.test(nameEN)
   );
 };
-
-export const durationFilter = (movie) => movie.duration < 41;
 
 const adaptDataToPage = (data) => ({
   country: data.country,
