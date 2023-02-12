@@ -12,23 +12,23 @@ const SavedMovies = (props) => {
   const currentUser = useContext(CurrentUserContext);
   const allSavedMoviesKey = getAllSavedMoviesKey(currentUser._id);
   const [loading, setLoading] = useState(false);
-  const [filterOn, setFilterOn] = useState(false);
+  const [isFilterOn, setIsFilterOn] = useState(false);
   const [keyWord, setKeyWord] = useState('');
   const [foundMoviesList, setFoundMoviesList] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const deleteMovie = useCallback(async (movie) => {
     const response = await props.deleteMovie(movie);
-    setFoundMoviesList((state) => state.filter((m) => m._id !== response._id)); //TODO !!!
+    setFoundMoviesList((state) => state.filter((m) => m._id !== response._id));
   }, []);
 
   useEffect(() => {
     const getFirstResult = async () => {
       setLoading(true);
 
-      const defaultMovies = await props.getSavedMovies();
-      localStorage.setItem(allSavedMoviesKey, JSON.stringify(defaultMovies));
-      setFoundMoviesList(defaultMovies);
+      const allSavedMovies = await props.getSavedMovies();
+      localStorage.setItem(allSavedMoviesKey, JSON.stringify(allSavedMovies));
+      setFoundMoviesList(allSavedMovies);
 
       setLoading(false);
     };
@@ -38,24 +38,21 @@ const SavedMovies = (props) => {
 
   useEffect(() => {
     const getResult = () => {
-      const allMovies = JSON.parse(localStorage.getItem(allSavedMoviesKey));
-
-      setFoundMoviesList(
-        keyWord ? allMovies.filter((item) => wordFilter(keyWord, item)) : allMovies,
-      );
+      const allSavedMovies = JSON.parse(localStorage.getItem(allSavedMoviesKey));
+      setFoundMoviesList(allSavedMovies.filter((item) => wordFilter(keyWord, item)));
+      if (!isSubmitted) setIsSubmitted(true);
     };
 
     if (keyWord !== '') getResult();
-    setIsSubmitted(true);
-  }, [keyWord, filterOn]);
+  }, [keyWord]);
 
   return (
     <>
       <Header loggedIn={props.loggedIn} place={'savedMovies'} />
       <main className="movies page__element">
         <SearchForm
-          filterOn={filterOn}
-          setFilterOn={setFilterOn}
+          isFilterOn={isFilterOn}
+          setIsFilterOn={setIsFilterOn}
           keyWord={keyWord}
           setKeyWord={setKeyWord}
           key={Date.now()}
@@ -66,7 +63,7 @@ const SavedMovies = (props) => {
           <MoviesCardList
             isSaved={true}
             deleteMovie={deleteMovie}
-            moviesData={filterOn ? foundMoviesList.filter(durationFilter) : foundMoviesList}
+            moviesData={isFilterOn ? foundMoviesList.filter(durationFilter) : foundMoviesList}
             isSubmitted={isSubmitted}
           />
         )}

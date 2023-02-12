@@ -1,3 +1,5 @@
+import { ALL_MOVIES_KEY } from './constants';
+
 export const debounce = (size, setter, argForBigScreen, argForSmallScreen) => {
   let isCooldown = false;
 
@@ -23,7 +25,7 @@ export const handleError = async (err, message) => {
 export const parseDuration = (duration) => {
   const hours = Math.floor(duration / 60);
   const minutes = duration - hours * 60;
-  return hours ? (minutes === 0 ? `${hours}ч` : `${hours}ч ${minutes}м`) : `${minutes}м`;
+  return hours ? (minutes ? `${hours}ч ${minutes}м` : `${hours}ч`) : `${minutes}м`;
 };
 
 export const wordFilter = (word, movie) => {
@@ -40,7 +42,7 @@ export const wordFilter = (word, movie) => {
 
 export const durationFilter = (movie) => movie.duration < 41;
 
-export const dataFilter = (data) => ({
+const adaptDataToPage = (data) => ({
   country: data.country,
   director: data.director,
   duration: data.duration,
@@ -55,33 +57,51 @@ export const dataFilter = (data) => ({
   owners: [],
 });
 
-export const getAllMovies = async (setLoading, getMovies, key) => {
-  let allMovies = JSON.parse(localStorage.getItem(key)) || [];
+export const getAllDefaultMovies = async (getMovies, setLoading) => {
+  let allMovies = JSON.parse(localStorage.getItem(ALL_MOVIES_KEY)) || [];
 
   if (!allMovies.length) {
-    setLoading(true);
+    if (setLoading) setLoading(true);
+
     const defaultMovies = await getMovies();
-    allMovies = defaultMovies.map(dataFilter);
-    localStorage.setItem(key, JSON.stringify(allMovies));
-    setLoading(false);
+    allMovies = defaultMovies.map(adaptDataToPage);
+    localStorage.setItem(ALL_MOVIES_KEY, JSON.stringify(allMovies));
+
+    if (setLoading) setLoading(false);
   }
 
   return allMovies;
 };
 
-export const adaptDataToDB = (movie, id) => ({
-  country: movie.country,
-  director: movie.director,
-  duration: movie.duration,
-  description: movie.description,
-  image: movie.image,
-  trailerLink: movie.trailerLink,
-  thumbnail: movie.thumbnail,
-  movieId: movie.movieId,
-  nameRU: movie.nameRU,
-  nameEN: movie.nameEN,
-  year: movie.year,
+export const adaptDataToDB = (data, id) => ({
+  country: data.country,
+  director: data.director,
+  duration: data.duration,
+  description: data.description,
+  image: data.image,
+  trailerLink: data.trailerLink,
+  thumbnail: data.thumbnail,
+  movieId: data.movieId,
+  nameRU: data.nameRU,
+  nameEN: data.nameEN,
+  year: data.year,
   owner: id,
 });
 
 export const getAllSavedMoviesKey = (id) => `${id}all`;
+
+export const getMoviesId = async (movieId, getSavedMovies) => {
+  const allSavedMovies = await getSavedMovies();
+  return allSavedMovies.find((item) => item.movieId === movieId)._id;
+};
+
+export const updateAllMoves = async (getDefaultMovies, deletingMovie, id) => {
+  const allMovies = await getAllDefaultMovies(getDefaultMovies);
+  const movieToChange = allMovies.find((item) => item.movieId === deletingMovie.movieId);
+  movieToChange.owners = movieToChange.owners.filter((m) => m !== id);
+
+  localStorage.setItem(
+    ALL_MOVIES_KEY,
+    JSON.stringify(allMovies.map((m) => (m.movieId === movieToChange.movieId ? movieToChange : m))),
+  );
+};

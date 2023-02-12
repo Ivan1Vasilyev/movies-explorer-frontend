@@ -20,7 +20,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import * as MainApi from '../../utils/MainApi';
 import getMovies from '../../utils/MoviesApi';
-import { handleError, dataFilter, adaptDataToDB } from '../../utils/helpers';
+import { handleError, adaptDataToDB, getMoviesId, updateAllMoves } from '../../utils/helpers';
 
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -90,7 +90,8 @@ const App = () => {
 
   const deleteMovie = async (movie) => {
     try {
-      await MainApi.deleteMovie(movie._id);
+      const movieId = await getMoviesId(movie.movieId, getSavedMovies);
+      await MainApi.deleteMovie(movieId);
       movie.owners = movie.owners.filter((m) => m !== currentUser._id);
       return movie;
     } catch (err) {
@@ -102,24 +103,7 @@ const App = () => {
   const deleteSavedMovie = async (movie) => {
     try {
       const deletingMovie = await MainApi.deleteMovie(movie._id);
-      let allMovies = JSON.parse(localStorage.getItem(ALL_MOVIES_KEY)) || [];
-
-      if (!allMovies.length) {
-        const defaultMovies = await getMovies();
-        allMovies = defaultMovies.map(dataFilter);
-      }
-
-      const movieToChange = allMovies.find((item) => item.movieId === deletingMovie.movieId);
-      console.log(movieToChange);
-      movieToChange.owners = movieToChange.owners.filter((m) => m !== currentUser._id);
-      console.log(movieToChange);
-
-      localStorage.setItem(
-        ALL_MOVIES_KEY,
-        JSON.stringify(
-          allMovies.map((m) => (m.movieId === movieToChange.movieId ? movieToChange : m)),
-        ),
-      );
+      await updateAllMoves(getDefaultMovies, deletingMovie, currentUser._id);
       return deletingMovie;
     } catch (err) {
       const message = await handleError(err);
@@ -129,9 +113,8 @@ const App = () => {
 
   const addMovie = async (movie) => {
     try {
+      await MainApi.addMovie(adaptDataToDB(movie, currentUser._id));
       movie.owners.push(currentUser._id);
-      const response = await MainApi.addMovie(adaptDataToDB(movie, currentUser._id));
-      movie._id = response._id;
       return movie;
     } catch (err) {
       const message = await handleError(err);
@@ -140,6 +123,7 @@ const App = () => {
   };
 
   const handleLikeMovie = async (movie) => {
+    // localStorage.clear();
     const response = movie.owners.includes(currentUser._id)
       ? await deleteMovie(movie)
       : await addMovie(movie);
@@ -147,10 +131,9 @@ const App = () => {
     const newAllMovies = JSON.parse(localStorage.getItem(ALL_MOVIES_KEY)).map((m) =>
       m.movieId === response.movieId ? response : m,
     );
-
     localStorage.setItem(ALL_MOVIES_KEY, JSON.stringify(newAllMovies));
 
-    return newAllMovies;
+    return response;
   };
 
   const checkToken = useCallback(async () => {

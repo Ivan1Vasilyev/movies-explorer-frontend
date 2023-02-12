@@ -8,7 +8,7 @@ import { useContext } from 'react';
 
 const MoviesCard = ({ data, handleLikeMovie, deleteMovie, isSaved }) => {
   const currentUser = useContext(CurrentUserContext);
-  const isLiked = isSaved ? false : data.owners?.includes(currentUser._id);
+  const isLiked = isSaved ? false : data.owners.includes(currentUser._id);
 
   return (
     <li className="movie">
@@ -21,7 +21,7 @@ const MoviesCard = ({ data, handleLikeMovie, deleteMovie, isSaved }) => {
           }`}
           src={isSaved ? deleteIcon : isLiked ? liked : like}
           alt={isSaved ? 'Удалить из коллекции' : 'Добавить в коллекцию'}
-          onClick={handleLikeMovie ? () => handleLikeMovie(data) : () => deleteMovie(data)}
+          onClick={isSaved ? () => deleteMovie(data) : () => handleLikeMovie(data)}
         />
       </div>
       <img className="movie__poster" src={data.image} alt="Постер к фильму" />
