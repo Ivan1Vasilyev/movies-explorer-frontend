@@ -57,10 +57,10 @@ const adaptDataToPage = (data) => ({
   owners: [],
 });
 
-export const getAllDefaultMovies = async (getMovies, setLoading) => {
-  let allMovies = JSON.parse(localStorage.getItem(ALL_MOVIES_KEY)) || [];
+export const getAllDefaultMovies = async (getMovies, setLoading, key) => {
+  let allMovies = JSON.parse(localStorage.getItem(ALL_MOVIES_KEY));
 
-  if (!allMovies.length) {
+  if (!allMovies) {
     if (setLoading) setLoading(true);
 
     const defaultMovies = await getMovies();
@@ -68,6 +68,15 @@ export const getAllDefaultMovies = async (getMovies, setLoading) => {
     localStorage.setItem(ALL_MOVIES_KEY, JSON.stringify(allMovies));
 
     if (setLoading) setLoading(false);
+  }
+
+  const allSavedMovies = localStorage.getItem(key);
+
+  if (allSavedMovies.length) {
+    allSavedMovies.forEach((s) => {
+      const index = allMovies.findIndex((m) => m.movieId === s.movieId);
+      if (!allMovies[index].owners.includes(s.owner)) allMovies[index].owners.push(s.owner);
+    });
   }
 
   return allMovies;

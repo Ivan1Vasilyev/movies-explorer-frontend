@@ -20,7 +20,13 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import * as MainApi from '../../utils/MainApi';
 import getMovies from '../../utils/MoviesApi';
-import { handleError, adaptDataToDB, getMoviesId, updateAllMoves } from '../../utils/helpers';
+import {
+  handleError,
+  adaptDataToDB,
+  getMoviesId,
+  updateAllMoves,
+  getAllSavedMoviesKey,
+} from '../../utils/helpers';
 
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -31,8 +37,8 @@ const App = () => {
 
   const authIn = (method) => async (userData) => {
     try {
-      const res = await method(userData);
-      setCurrentUser({ ...res });
+      const response = await method(userData);
+      setCurrentUser({ ...response });
       setLoggedIn(true);
       if (errorMessage) setErrorMessage('');
       navigate(ROUTE_MOVIES);
@@ -46,10 +52,32 @@ const App = () => {
 
   const login = authIn(MainApi.login);
 
+  // const login = async (userData) => {
+  //   try {
+  //     const response = await MainApi.login(userData);
+  //     console.log(response);
+  //     setCurrentUser({ ...response });
+  //     setLoggedIn(true);
+  //     const key = getAllSavedMoviesKey(response._id);
+  //     let allSavedMovies = localStorage.getItem(key);
+
+  //     if (!allSavedMovies) {
+  //       allSavedMovies = await getMovies();
+  //       localStorage.setItem(key, allSavedMovies);
+  //     }
+
+  //     if (errorMessage) setErrorMessage('');
+  //     navigate(ROUTE_MOVIES);
+  //   } catch (err) {
+  //     const message = await handleError(err);
+  //     setErrorMessage(message);
+  //   }
+  // };
+
   const updateUser = async (data) => {
     try {
-      const res = await MainApi.updateUser(data);
-      setCurrentUser((state) => ({ ...state, ...res }));
+      const response = await MainApi.updateUser(data);
+      setCurrentUser((state) => ({ ...state, ...response }));
       if (errorMessage) setErrorMessage('');
     } catch (err) {
       const message = await handleError(err);
