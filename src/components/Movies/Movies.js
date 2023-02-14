@@ -6,7 +6,7 @@ import Footer from '../Footer/Footer';
 import Preloader from '../Preloader/Preloader';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { wordFilter, durationFilter, getAllDefaultMovies } from '../../utils/helpers';
+import { wordFilter, durationFilter, getAllDefaultMovies, updateLikes } from '../../utils/helpers';
 
 const Movies = (props) => {
   const currentUser = useContext(CurrentUserContext);
@@ -34,10 +34,13 @@ const Movies = (props) => {
 
   useEffect(() => {
     const getResult = async () => {
-      const allMovies = await getAllDefaultMovies(props.getMovies, setLoading);
+      if (!isSubmitted) {
+        await updateLikes(props.getDefaultMovies, props.getSavedMovies, currentUser._id);
+        setIsSubmitted(true);
+      }
 
+      const allMovies = await getAllDefaultMovies(props.getDefaultMovies, setLoading);
       setFoundMoviesList(allMovies.filter((item) => wordFilter(keyWord, item)));
-      if (!isSubmitted) setIsSubmitted(true);
 
       localStorage.setItem(
         storageKey,
@@ -48,7 +51,7 @@ const Movies = (props) => {
       );
     };
     if (keyWord !== '') getResult();
-  }, [keyWord]);
+  }, [keyWord, isFilterOn]);
 
   return (
     <>

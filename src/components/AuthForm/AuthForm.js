@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom';
 import useErrorShielding from '../../hooks/useErrorShielding';
 
 const AuthForm = (props) => {
-  const { isSubmitted, handlerSubmit } = useErrorShielding(props.onSubmit);
+  const { isSubmitted, handleSubmit } = useErrorShielding(props.formik);
 
   return (
-    <form className="form page__element" onSubmit={handlerSubmit}>
+    <form className="form page__element" onSubmit={handleSubmit}>
       <div className="form__fields">
         <Logo mixStyle="form__logo" />
         <h2 className="form__title">{props.title}</h2>

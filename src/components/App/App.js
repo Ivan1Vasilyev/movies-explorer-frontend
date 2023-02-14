@@ -24,8 +24,9 @@ import {
   handleError,
   adaptDataToDB,
   getMoviesId,
-  updateAllMoves,
-  getAllSavedMoviesKey,
+  updateAllMovies,
+  removeSavedMovieFromStore,
+  addSavedMovieToStore,
 } from '../../utils/helpers';
 
 const App = () => {
@@ -51,28 +52,6 @@ const App = () => {
   const register = authIn(MainApi.register);
 
   const login = authIn(MainApi.login);
-
-  // const login = async (userData) => {
-  //   try {
-  //     const response = await MainApi.login(userData);
-  //     console.log(response);
-  //     setCurrentUser({ ...response });
-  //     setLoggedIn(true);
-  //     const key = getAllSavedMoviesKey(response._id);
-  //     let allSavedMovies = localStorage.getItem(key);
-
-  //     if (!allSavedMovies) {
-  //       allSavedMovies = await getMovies();
-  //       localStorage.setItem(key, allSavedMovies);
-  //     }
-
-  //     if (errorMessage) setErrorMessage('');
-  //     navigate(ROUTE_MOVIES);
-  //   } catch (err) {
-  //     const message = await handleError(err);
-  //     setErrorMessage(message);
-  //   }
-  // };
 
   const updateUser = async (data) => {
     try {
@@ -118,8 +97,9 @@ const App = () => {
 
   const deleteMovie = async (movie) => {
     try {
-      const movieId = await getMoviesId(movie.movieId, getSavedMovies);
-      await MainApi.deleteMovie(movieId);
+      const movieId = await getMoviesId(movie.movieId, getSavedMovies, currentUser._id);
+      const deletingMovie = await MainApi.deleteMovie(movieId);
+      await removeSavedMovieFromStore(deletingMovie, currentUser._id, getSavedMovies);
       movie.owners = movie.owners.filter((m) => m !== currentUser._id);
       return movie;
     } catch (err) {
@@ -131,7 +111,7 @@ const App = () => {
   const deleteSavedMovie = async (movie) => {
     try {
       const deletingMovie = await MainApi.deleteMovie(movie._id);
-      await updateAllMoves(getDefaultMovies, deletingMovie, currentUser._id);
+      await updateAllMovies(getDefaultMovies, deletingMovie, currentUser._id);
       return deletingMovie;
     } catch (err) {
       const message = await handleError(err);
@@ -141,7 +121,8 @@ const App = () => {
 
   const addMovie = async (movie) => {
     try {
-      await MainApi.addMovie(adaptDataToDB(movie, currentUser._id));
+      const addingMovie = await MainApi.addMovie(adaptDataToDB(movie, currentUser._id));
+      await addSavedMovieToStore(addingMovie, currentUser._id, getSavedMovies);
       movie.owners.push(currentUser._id);
       return movie;
     } catch (err) {
@@ -199,7 +180,8 @@ const App = () => {
                 loggedIn={loggedIn}
                 component={Movies}
                 handleLikeMovie={handleLikeMovie}
-                getMovies={getDefaultMovies}
+                getDefaultMovies={getDefaultMovies}
+                getSavedMovies={getSavedMovies}
                 errorMessage={errorMessage}
               />
             }

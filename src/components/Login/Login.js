@@ -7,7 +7,7 @@ import { Navigate } from 'react-router-dom';
 
 const Login = (props) => {
   const { formik, disabled } = useForm({ email: '', password: '' }, props.onSubmit);
-  const { touched, errors, handleSubmit } = formik;
+  const { touched, errors } = formik;
 
   if (props.loggedIn) return <Navigate to="/" />;
 
@@ -20,7 +20,7 @@ const Login = (props) => {
       linkText="Регистрация"
       disabled={disabled}
       errorMessage={props.errorMessage}
-      onSubmit={handleSubmit}
+      formik={formik}
     >
       <Field
         className={`form__input ${touched.email && errors.email && 'form__input_onError'}`}

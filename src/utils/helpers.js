@@ -57,31 +57,6 @@ const adaptDataToPage = (data) => ({
   owners: [],
 });
 
-export const getAllDefaultMovies = async (getMovies, setLoading, key) => {
-  let allMovies = JSON.parse(localStorage.getItem(ALL_MOVIES_KEY));
-
-  if (!allMovies) {
-    if (setLoading) setLoading(true);
-
-    const defaultMovies = await getMovies();
-    allMovies = defaultMovies.map(adaptDataToPage);
-    localStorage.setItem(ALL_MOVIES_KEY, JSON.stringify(allMovies));
-
-    if (setLoading) setLoading(false);
-  }
-
-  const allSavedMovies = localStorage.getItem(key);
-
-  if (allSavedMovies.length) {
-    allSavedMovies.forEach((s) => {
-      const index = allMovies.findIndex((m) => m.movieId === s.movieId);
-      if (!allMovies[index].owners.includes(s.owner)) allMovies[index].owners.push(s.owner);
-    });
-  }
-
-  return allMovies;
-};
-
 export const adaptDataToDB = (data, id) => ({
   country: data.country,
   director: data.director,
@@ -99,18 +74,76 @@ export const adaptDataToDB = (data, id) => ({
 
 export const getAllSavedMoviesKey = (id) => `${id}all`;
 
-export const getMoviesId = async (movieId, getSavedMovies) => {
-  const allSavedMovies = await getSavedMovies();
+export const getAllDefaultMovies = async (getMovies, setLoading) => {
+  let allMovies = JSON.parse(localStorage.getItem(ALL_MOVIES_KEY));
+
+  if (!allMovies) {
+    if (setLoading) setLoading(true);
+
+    const defaultMovies = await getMovies();
+    allMovies = defaultMovies.map(adaptDataToPage);
+    localStorage.setItem(ALL_MOVIES_KEY, JSON.stringify(allMovies));
+
+    if (setLoading) setLoading(false);
+  }
+
+  return allMovies;
+};
+
+const getAllSavedMovies = async (getSavedMovies, currentUserId) => {
+  const key = getAllSavedMoviesKey(currentUserId);
+  let allSavedMovies = JSON.parse(localStorage.getItem(key));
+
+  if (!allSavedMovies) {
+    allSavedMovies = await getSavedMovies();
+    localStorage.setItem(key, JSON.stringify(allSavedMovies));
+  }
+
+  return allSavedMovies;
+};
+
+const handleLocalStore = (add) => async (movie, currentUserId, getSavedMovies) => {
+  const key = getAllSavedMoviesKey(currentUserId);
+  const savedMovies = JSON.parse(localStorage.getItem(key));
+
+  if (savedMovies) {
+    const allSavedMovies = await getSavedMovies();
+    localStorage.setItem(key, JSON.stringify(allSavedMovies));
+    return;
+  }
+
+  if (add) {
+    savedMovies.push(movie);
+    localStorage.setItem(key, JSON.stringify(savedMovies));
+  } else {
+    localStorage.setItem(key, JSON.stringify(savedMovies.filter((m) => m._id !== movie._id)));
+  }
+};
+
+export const removeSavedMovieFromStore = handleLocalStore();
+
+export const addSavedMovieToStore = handleLocalStore(true);
+
+export const getMoviesId = async (movieId, getSavedMovies, currentUserId) => {
+  const allSavedMovies = await getAllSavedMovies(getSavedMovies, currentUserId);
   return allSavedMovies.find((item) => item.movieId === movieId)._id;
 };
 
-export const updateAllMoves = async (getDefaultMovies, deletingMovie, id) => {
+export const updateAllMovies = async (getDefaultMovies, deletingMovie, currentUserId) => {
   const allMovies = await getAllDefaultMovies(getDefaultMovies);
-  const movieToChange = allMovies.find((item) => item.movieId === deletingMovie.movieId);
-  movieToChange.owners = movieToChange.owners.filter((m) => m !== id);
+  const index = allMovies.findIndex((m) => m.movieId === deletingMovie.movieId);
+  allMovies[index].owners = allMovies[index].owners.filter((m) => m !== currentUserId);
+  localStorage.setItem(ALL_MOVIES_KEY, JSON.stringify(allMovies));
+};
 
-  localStorage.setItem(
-    ALL_MOVIES_KEY,
-    JSON.stringify(allMovies.map((m) => (m.movieId === movieToChange.movieId ? movieToChange : m))),
-  );
+export const updateLikes = async (getDefaultMovies, getSavedMovies, currentUserId) => {
+  const savedMovies = await getAllSavedMovies(getSavedMovies, currentUserId);
+  const allMovies = await getAllDefaultMovies(getDefaultMovies);
+  savedMovies.forEach((s) => {
+    const index = allMovies.findIndex((m) => m.movieId === s.movieId);
+    if (!allMovies[index].owners.includes(currentUserId)) {
+      allMovies[index].owners.push(currentUserId);
+    }
+  });
+  localStorage.setItem(ALL_MOVIES_KEY, JSON.stringify(allMovies));
 };
