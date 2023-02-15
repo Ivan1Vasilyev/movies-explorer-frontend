@@ -111,7 +111,9 @@
   opacity: 0.4;
 }
 
-.profile__link {
+.profile__logout {
+  background-color: transparent;
+  border: none;
   font-weight: 500;
   font-size: 13px;
   line-height: 1.23;
@@ -128,7 +130,7 @@
   overflow-x: hidden;
 }
 
-.profile__link:before {
+.profile__logout:before {
   content: '';
   position: absolute;
   top: 0;
@@ -157,12 +159,13 @@
   .profile__submit-button_disabled:hover:before {
     left: -100%;
   }
-  .profile__link:hover {
+  .profile__logout:hover {
+    cursor: pointer;
     transform: scale(1.1);
     box-shadow: 0px 0px 2px 0px rgba(66, 133, 244, 0.5), 0px 0px 8px 0px rgba(66, 133, 244, 0.5),
       inset 0px 0px 2px 0px rgba(66, 133, 244, 0.3), inset 0px 0px 8px 0px rgba(66, 133, 244, 0.3);
   }
-  .profile__link:hover:before {
+  .profile__logout:hover:before {
     left: 100%;
   }
 }
@@ -188,7 +191,7 @@
     font-size: 12px;
     line-height: 1.25;
   }
-  .profile__link {
+  .profile__logout {
     font-size: 12px;
     line-height: 1.25;
   }

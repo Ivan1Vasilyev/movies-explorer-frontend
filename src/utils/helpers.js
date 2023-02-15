@@ -1,4 +1,4 @@
-import { ALL_MOVIES_KEY } from './constants';
+import { ALL_MOVIES_KEY, SERVER_ERROR_MESSAGE, TYPE_ERROR_MESSAGE } from './constants';
 
 export const debounce = (size, setter, argForBigScreen, argForSmallScreen) => {
   let isCooldown = false;
@@ -15,9 +15,12 @@ export const debounce = (size, setter, argForBigScreen, argForSmallScreen) => {
   };
 };
 
-export const handleError = async (err, message) => {
-  const error = await err;
-  if (message) console.log(message);
+export const handleError = async (err, errorMessage) => {
+  const { status, name } = err;
+  console.log(err);
+  if (name === 'TypeError') return TYPE_ERROR_MESSAGE;
+  if (String(status).startsWith('5')) return errorMessage || SERVER_ERROR_MESSAGE;
+  const error = await err.json();
   console.log(error);
   return error.message;
 };
@@ -129,10 +132,17 @@ export const getMoviesId = async (movieId, getSavedMovies, currentUserId) => {
   return allSavedMovies.find((item) => item.movieId === movieId)._id;
 };
 
-export const updateAllMovies = async (deletingMovie, getDefaultMovies, currentUserId) => {
+export const updateAllMoviesFromSaved = async (deletingMovie, getDefaultMovies, currentUserId) => {
   const allMovies = await getAllDefaultMovies(getDefaultMovies);
   const index = allMovies.findIndex((m) => m.movieId === deletingMovie.movieId);
   allMovies[index].owners = allMovies[index].owners.filter((m) => m !== currentUserId);
+  localStorage.setItem(ALL_MOVIES_KEY, JSON.stringify(allMovies));
+};
+
+export const updateAllMovies = (response) => {
+  const allMovies = JSON.parse(localStorage.getItem(ALL_MOVIES_KEY)).map((m) =>
+    m.movieId === response.movieId ? response : m,
+  );
   localStorage.setItem(ALL_MOVIES_KEY, JSON.stringify(allMovies));
 };
 

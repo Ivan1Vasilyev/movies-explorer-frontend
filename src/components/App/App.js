@@ -8,6 +8,7 @@ import Movies from '../Movies/Movies';
 import SavedMovies from '../SavedMovies/SavedMovies';
 import Main from '../Main/Main';
 import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
+import Popup from '../Popup/Popup';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import {
   ROUTE_SIGN_IN,
@@ -18,7 +19,8 @@ import {
   ALL_MOVIES_KEY,
   LOAD_MOVIES_ERROR_MESSAGE,
   TOKEN_ERROR_MESSAGE,
-  SERVER_ERROR_MESSAGE,
+  REGISTER_ERROR_MESSAGE,
+  UPDATE_USER_ERROR_MESSAGE,
 } from '../../utils/constants';
 import { useCallback, useEffect, useState } from 'react';
 import * as MainApi from '../../utils/MainApi';
@@ -27,6 +29,7 @@ import {
   handleError,
   adaptDataToDB,
   getMoviesId,
+  updateAllMoviesFromSaved,
   updateAllMovies,
   removeSavedMovieFromStore,
   addSavedMovieToStore,
@@ -36,18 +39,23 @@ const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const { pathname } = useLocation();
 
   const navigate = useNavigate();
 
-  const apiWrapper = (callback, customErrorMessage) => async (data) => {
+  const openPopup = () => setIsPopupOpen(true);
+  const closePopup = () => setIsPopupOpen(false);
+
+  const apiWrapper = (callback, customErrorMessage, inPopup) => async (data) => {
     try {
       if (errorMessage) setErrorMessage('');
       const response = await callback(data);
       return response;
     } catch (err) {
-      const message = await handleError(err);
-      setErrorMessage(customErrorMessage || message);
+      const message = await handleError(err, customErrorMessage);
+      setErrorMessage(message);
+      if (inPopup) openPopup();
     }
   };
 
@@ -58,20 +66,24 @@ const App = () => {
     navigate(ROUTE_MOVIES);
   };
 
-  const register = apiWrapper((userData) => authIn(MainApi.register)(userData));
+  const register = apiWrapper(
+    (userData) => authIn(MainApi.register)(userData),
+    REGISTER_ERROR_MESSAGE,
+  );
 
-  const login = apiWrapper((userData) => authIn(MainApi.login)(userData));
+  const login = apiWrapper((userData) => authIn(MainApi.login)(userData), TOKEN_ERROR_MESSAGE);
 
   const updateUser = apiWrapper(async (data) => {
     const response = await MainApi.updateUser(data);
     setCurrentUser((state) => ({ ...state, ...response }));
-  });
+  }, UPDATE_USER_ERROR_MESSAGE);
 
   const logout = apiWrapper(async () => {
     await MainApi.logout({ _id: currentUser._id });
     setCurrentUser({});
     setLoggedIn(false);
-  });
+    navigate('/');
+  }, TOKEN_ERROR_MESSAGE);
 
   const getDefaultMovies = apiWrapper(async () => {
     const response = await getMovies();
@@ -90,11 +102,13 @@ const App = () => {
       async (movie) => {
         const deletingMovie = await MainApi.deleteMovie(movie._id);
         await removeSavedMovieFromStore(deletingMovie, currentUser._id, getSavedMovies);
-        await updateAllMovies(deletingMovie, getDefaultMovies, currentUser._id);
+        await updateAllMoviesFromSaved(deletingMovie, getDefaultMovies, currentUser._id);
         return deletingMovie;
       },
       [currentUser._id],
     ),
+    '',
+    true,
   );
 
   const deleteMovie = async (movie) => {
@@ -112,18 +126,22 @@ const App = () => {
     return movie;
   };
 
-  const handleLikeMovie = apiWrapper(async (movie) => {
-    const response = movie.owners.includes(currentUser._id)
-      ? await deleteMovie(movie)
-      : await addMovie(movie);
+  const handleLikeMovie = apiWrapper(
+    useCallback(
+      async (movie) => {
+        const response = movie.owners.includes(currentUser._id)
+          ? await deleteMovie(movie)
+          : await addMovie(movie);
 
-    const allMovies = JSON.parse(localStorage.getItem(ALL_MOVIES_KEY)).map((m) =>
-      m.movieId === response.movieId ? response : m,
-    );
-    localStorage.setItem(ALL_MOVIES_KEY, JSON.stringify(allMovies));
+        updateAllMovies(response);
 
-    return response;
-  }, SERVER_ERROR_MESSAGE);
+        return response;
+      },
+      [currentUser._id],
+    ),
+    '',
+    true,
+  );
 
   const checkToken = apiWrapper(
     useCallback(async () => {
@@ -132,7 +150,6 @@ const App = () => {
       setLoggedIn(true);
       navigate(pathname);
     }, [pathname]),
-    TOKEN_ERROR_MESSAGE,
   );
 
   useEffect(() => {
@@ -191,9 +208,10 @@ const App = () => {
               />
             }
           />
-          <Route exact path="/" element={<Main loggedIn={loggedIn} />} />
+          <Route exact path="/" element={<Main loggedIn={loggedIn} openPopup={openPopup} />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
+        <Popup isOpen={isPopupOpen} onClose={closePopup} errorMessage={errorMessage} />
       </CurrentUserContext.Provider>
     </Page>
   );

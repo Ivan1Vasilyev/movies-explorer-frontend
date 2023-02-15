@@ -57,14 +57,13 @@ const Profile = (props) => {
           >
             Редактировать
           </button>
-          <Link
-            to={'/'}
+          <button
             onClick={props.onLogout}
-            className="profile__link"
+            className="profile__logout"
             aria-label="Выйти из аккаунта"
           >
             Выйти из аккаунта
-          </Link>
+          </button>
         </div>
       </form>
     </>

@@ -2,9 +2,10 @@ const baseUrl = 'https://api.moovies.nomoredomains.rocks';
 export const headers = { 'Content-Type': 'application/json' };
 
 export const responseHandler = (response) =>
-  response.ok ? response.json() : Promise.reject(response.json());
+  response.ok ? response.json() : Promise.reject(response);
 
 const multiFetch = (method, route) => async (data) => {
+  console.log(baseUrl);
   const response = await fetch(`${baseUrl}/${route}`, {
     method,
     headers,

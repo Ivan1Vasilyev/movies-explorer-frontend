@@ -37,6 +37,7 @@ const MoviesCardList = ({
 
   useEffect(() => {
     if (isSaved) return;
+    if (resultMoviesList === undefined) return;
     const { length } = resultMoviesList;
 
     if (!length && window.innerWidth < CHANGE_STEP_WIDTH) {
@@ -57,7 +58,7 @@ const MoviesCardList = ({
 
   return (
     <section className="movies-list">
-      {moviesData.length ? (
+      {moviesData?.length ? (
         <>
           <ul
             className={`movies-list__container ${
