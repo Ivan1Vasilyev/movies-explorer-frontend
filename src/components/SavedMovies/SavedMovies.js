@@ -55,7 +55,6 @@ const SavedMovies = (props) => {
           setIsFilterOn={setIsFilterOn}
           keyWord={keyWord}
           setKeyWord={setKeyWord}
-          key={Date.now()}
         />
         {loading ? (
           <Preloader />
@@ -65,6 +64,7 @@ const SavedMovies = (props) => {
             deleteMovie={deleteMovie}
             moviesData={isFilterOn ? foundMoviesList.filter(durationFilter) : foundMoviesList}
             isSubmitted={isSubmitted}
+            errorMessage={props.errorMessage}
           />
         )}
       </main>

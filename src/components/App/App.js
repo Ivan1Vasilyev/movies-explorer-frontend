@@ -16,6 +16,9 @@ import {
   ROUTE_MOVIES,
   ROUTE_SAVED_MOVIES,
   ALL_MOVIES_KEY,
+  LOAD_MOVIES_ERROR_MESSAGE,
+  TOKEN_ERROR_MESSAGE,
+  SERVER_ERROR_MESSAGE,
 } from '../../utils/constants';
 import { useCallback, useEffect, useState } from 'react';
 import * as MainApi from '../../utils/MainApi';
@@ -34,126 +37,103 @@ const App = () => {
   const [currentUser, setCurrentUser] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
   const { pathname } = useLocation();
+
   const navigate = useNavigate();
 
+  const apiWrapper = (callback, customErrorMessage) => async (data) => {
+    try {
+      if (errorMessage) setErrorMessage('');
+      const response = await callback(data);
+      return response;
+    } catch (err) {
+      const message = await handleError(err);
+      setErrorMessage(customErrorMessage || message);
+    }
+  };
+
   const authIn = (method) => async (userData) => {
-    try {
-      const response = await method(userData);
-      setCurrentUser({ ...response });
-      setLoggedIn(true);
-      if (errorMessage) setErrorMessage('');
-      navigate(ROUTE_MOVIES);
-    } catch (err) {
-      const message = await handleError(err);
-      setErrorMessage(message);
-    }
+    const response = await method(userData);
+    setCurrentUser({ ...response });
+    setLoggedIn(true);
+    navigate(ROUTE_MOVIES);
   };
 
-  const register = authIn(MainApi.register);
+  const register = apiWrapper((userData) => authIn(MainApi.register)(userData));
 
-  const login = authIn(MainApi.login);
+  const login = apiWrapper((userData) => authIn(MainApi.login)(userData));
 
-  const updateUser = async (data) => {
-    try {
-      const response = await MainApi.updateUser(data);
-      setCurrentUser((state) => ({ ...state, ...response }));
-      if (errorMessage) setErrorMessage('');
-    } catch (err) {
-      const message = await handleError(err);
-      setErrorMessage(message);
-    }
-  };
+  const updateUser = apiWrapper(async (data) => {
+    const response = await MainApi.updateUser(data);
+    setCurrentUser((state) => ({ ...state, ...response }));
+  });
 
-  const logout = async () => {
-    try {
-      await MainApi.logout({ _id: currentUser._id });
-      setCurrentUser({});
-      setLoggedIn(false);
-    } catch (err) {
-      const message = await handleError(err);
-      setErrorMessage(message);
-    }
-  };
+  const logout = apiWrapper(async () => {
+    await MainApi.logout({ _id: currentUser._id });
+    setCurrentUser({});
+    setLoggedIn(false);
+  });
 
-  const getDefaultMovies = async () => {
-    try {
-      const response = await getMovies();
-      return response;
-    } catch (err) {
-      const message = await handleError(err);
-      setErrorMessage(message);
-    }
-  };
+  const getDefaultMovies = apiWrapper(async () => {
+    const response = await getMovies();
+    if (errorMessage) setErrorMessage('');
+    return response;
+  }, LOAD_MOVIES_ERROR_MESSAGE);
 
-  const getSavedMovies = async () => {
-    try {
-      const response = await MainApi.getMovies();
-      return response;
-    } catch (err) {
-      const message = await handleError(err);
-      setErrorMessage(message);
-    }
-  };
+  const getSavedMovies = apiWrapper(async () => {
+    const response = await MainApi.getMovies();
+    if (errorMessage) setErrorMessage('');
+    return response;
+  }, LOAD_MOVIES_ERROR_MESSAGE);
+
+  const deleteSavedMovie = apiWrapper(
+    useCallback(
+      async (movie) => {
+        const deletingMovie = await MainApi.deleteMovie(movie._id);
+        await removeSavedMovieFromStore(deletingMovie, currentUser._id, getSavedMovies);
+        await updateAllMovies(deletingMovie, getDefaultMovies, currentUser._id);
+        return deletingMovie;
+      },
+      [currentUser._id],
+    ),
+  );
 
   const deleteMovie = async (movie) => {
-    try {
-      const movieId = await getMoviesId(movie.movieId, getSavedMovies, currentUser._id);
-      const deletingMovie = await MainApi.deleteMovie(movieId);
-      await removeSavedMovieFromStore(deletingMovie, currentUser._id, getSavedMovies);
-      movie.owners = movie.owners.filter((m) => m !== currentUser._id);
-      return movie;
-    } catch (err) {
-      const message = await handleError(err);
-      setErrorMessage(message);
-    }
-  };
-
-  const deleteSavedMovie = async (movie) => {
-    try {
-      const deletingMovie = await MainApi.deleteMovie(movie._id);
-      await updateAllMovies(getDefaultMovies, deletingMovie, currentUser._id);
-      return deletingMovie;
-    } catch (err) {
-      const message = await handleError(err);
-      setErrorMessage(message);
-    }
+    const movieId = await getMoviesId(movie.movieId, getSavedMovies, currentUser._id);
+    const deletingMovie = await MainApi.deleteMovie(movieId);
+    await removeSavedMovieFromStore(deletingMovie, currentUser._id, getSavedMovies);
+    movie.owners = movie.owners.filter((m) => m !== currentUser._id);
+    return movie;
   };
 
   const addMovie = async (movie) => {
-    try {
-      const addingMovie = await MainApi.addMovie(adaptDataToDB(movie, currentUser._id));
-      await addSavedMovieToStore(addingMovie, currentUser._id, getSavedMovies);
-      movie.owners.push(currentUser._id);
-      return movie;
-    } catch (err) {
-      const message = await handleError(err);
-      setErrorMessage(message);
-    }
+    const addingMovie = await MainApi.addMovie(adaptDataToDB(movie, currentUser._id));
+    await addSavedMovieToStore(addingMovie, currentUser._id, getSavedMovies);
+    movie.owners.push(currentUser._id);
+    return movie;
   };
 
-  const handleLikeMovie = async (movie) => {
+  const handleLikeMovie = apiWrapper(async (movie) => {
     const response = movie.owners.includes(currentUser._id)
       ? await deleteMovie(movie)
       : await addMovie(movie);
 
-    const newAllMovies = JSON.parse(localStorage.getItem(ALL_MOVIES_KEY)).map((m) =>
+    const allMovies = JSON.parse(localStorage.getItem(ALL_MOVIES_KEY)).map((m) =>
       m.movieId === response.movieId ? response : m,
     );
-    localStorage.setItem(ALL_MOVIES_KEY, JSON.stringify(newAllMovies));
+    localStorage.setItem(ALL_MOVIES_KEY, JSON.stringify(allMovies));
 
     return response;
-  };
+  }, SERVER_ERROR_MESSAGE);
 
-  const checkToken = useCallback(async () => {
-    try {
+  const checkToken = apiWrapper(
+    useCallback(async () => {
       const user = await MainApi.getUserInfo();
       setCurrentUser(user);
       setLoggedIn(true);
       navigate(pathname);
-    } catch (err) {
-      handleError(err, 'Ошибка проверки токена');
-    }
-  }, [pathname]);
+    }, [pathname]),
+    TOKEN_ERROR_MESSAGE,
+  );
 
   useEffect(() => {
     checkToken();
@@ -194,6 +174,7 @@ const App = () => {
                 component={SavedMovies}
                 getSavedMovies={getSavedMovies}
                 deleteMovie={deleteSavedMovie}
+                errorMessage={errorMessage}
                 isOwner={true}
               />
             }

@@ -10,7 +10,14 @@ import {
   CHANGE_STEP_WIDTH,
 } from '../../utils/constants';
 
-const MoviesCardList = ({ moviesData, isSubmitted, handleLikeMovie, deleteMovie, isSaved }) => {
+const MoviesCardList = ({
+  moviesData,
+  isSubmitted,
+  handleLikeMovie,
+  deleteMovie,
+  isSaved,
+  errorMessage,
+}) => {
   const [resultMoviesList, setResultMoviesList] = useState([]);
   const [limiter, setLimiter] = useState(COUNT_BIG_SCREEN);
   const [addCounter, setAddCounter] = useState(STEP_BIG_SCREEN);
@@ -79,7 +86,7 @@ const MoviesCardList = ({ moviesData, isSubmitted, handleLikeMovie, deleteMovie,
               )}
         </>
       ) : (
-        <p className="movies-list__empty">{isSubmitted && 'Ничего не найдено'}</p>
+        <p className="movies-list__empty">{errorMessage || (isSubmitted && 'Ничего не найдено')}</p>
       )}
     </section>
   );

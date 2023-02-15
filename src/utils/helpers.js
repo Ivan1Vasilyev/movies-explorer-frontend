@@ -106,7 +106,7 @@ const handleLocalStore = (add) => async (movie, currentUserId, getSavedMovies) =
   const key = getAllSavedMoviesKey(currentUserId);
   const savedMovies = JSON.parse(localStorage.getItem(key));
 
-  if (savedMovies) {
+  if (!savedMovies) {
     const allSavedMovies = await getSavedMovies();
     localStorage.setItem(key, JSON.stringify(allSavedMovies));
     return;
@@ -129,7 +129,7 @@ export const getMoviesId = async (movieId, getSavedMovies, currentUserId) => {
   return allSavedMovies.find((item) => item.movieId === movieId)._id;
 };
 
-export const updateAllMovies = async (getDefaultMovies, deletingMovie, currentUserId) => {
+export const updateAllMovies = async (deletingMovie, getDefaultMovies, currentUserId) => {
   const allMovies = await getAllDefaultMovies(getDefaultMovies);
   const index = allMovies.findIndex((m) => m.movieId === deletingMovie.movieId);
   allMovies[index].owners = allMovies[index].owners.filter((m) => m !== currentUserId);

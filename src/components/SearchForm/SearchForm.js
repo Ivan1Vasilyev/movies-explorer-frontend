@@ -1,10 +1,14 @@
 import './SearchForm.css';
 import FilterCheckbox from '../FilterCheckbox/FilterCheckbox';
 import useSearchForm from '../../hooks/useSearchForm';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 const SearchForm = ({ isFilterOn, setIsFilterOn, keyWord, setKeyWord }) => {
-  const { value, isSearchEmpty, handleChange, handleSubmit } = useSearchForm(setKeyWord, keyWord);
+  const { value, setValue, isSearchEmpty, handleChange, handleSubmit } = useSearchForm(setKeyWord);
+
+  useEffect(() => {
+    if (keyWord) setValue(keyWord);
+  }, [keyWord]);
 
   const toggleFilter = useCallback((e) => setIsFilterOn(e.target.checked), []);
 
@@ -15,7 +19,7 @@ const SearchForm = ({ isFilterOn, setIsFilterOn, keyWord, setKeyWord }) => {
         type="text"
         value={value}
         onChange={handleChange}
-        placeholder="Найти фильмы по ключевому слову"
+        placeholder="Фильм"
         className="searchform__input"
       />
       <span className="searchform__error">{isSearchEmpty && 'Введите ключевое слово'}</span>
