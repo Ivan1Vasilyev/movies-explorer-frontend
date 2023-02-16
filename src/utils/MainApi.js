@@ -1,5 +1,4 @@
-// const baseUrl = 'https://api.moovies.nomoredomains.rocks';
-const baseUrl = 'https://api.shaloban.students.nomoredomains.club'
+const baseUrl = 'https://api.shaloban.students.nomoredomains.club';
 export const headers = { 'Content-Type': 'application/json' };
 
 export const responseHandler = (response) =>
