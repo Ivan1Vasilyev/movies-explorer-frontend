@@ -12,19 +12,21 @@ const MoviesCard = ({ data, handleLikeMovie, deleteMovie, isSaved }) => {
 
   return (
     <li className="movie">
-      <div className="movie__info">
-        <h2 className="movie__name">{data.nameRU}</h2>
-        <p className="movie__duration">{parseDuration(data.duration)}</p>
-        <img
-          className={`movie__button ${
-            isSaved ? 'movie__button_state_delete' : 'movie__button_state_add'
-          }`}
-          src={isSaved ? deleteIcon : isLiked ? liked : like}
-          alt={isSaved ? 'Удалить из коллекции' : 'Добавить в коллекцию'}
-          onClick={isSaved ? () => deleteMovie(data) : () => handleLikeMovie(data)}
-        />
-      </div>
-      <img className="movie__poster" src={data.image} alt="Постер к фильму" />
+      <a className="movie__link" href={data.trailerLink} target="_blank" rel="noreferrer noopener">
+        <div className="movie__info">
+          <h2 className="movie__name">{data.nameRU}</h2>
+          <p className="movie__duration">{parseDuration(data.duration)}</p>
+          <img
+            className={`movie__button ${
+              isSaved ? 'movie__button_state_delete' : 'movie__button_state_add'
+            }`}
+            src={isSaved ? deleteIcon : isLiked ? liked : like}
+            alt={isSaved ? 'Удалить из коллекции' : 'Добавить в коллекцию'}
+            onClick={isSaved ? () => deleteMovie(data) : () => handleLikeMovie(data)}
+          />
+        </div>
+        <img className="movie__poster" src={data.image} alt="Постер к фильму" />
+      </a>
     </li>
   );
 };
