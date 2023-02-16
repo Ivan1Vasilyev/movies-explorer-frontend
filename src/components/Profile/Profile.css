@@ -93,7 +93,7 @@
   transition: 0.3s;
   padding: 7px 7px;
   position: relative;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 .profile__submit-button:before {
