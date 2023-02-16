@@ -9,6 +9,11 @@ import { useContext } from 'react';
 const MoviesCard = ({ data, handleLikeMovie, deleteMovie, isSaved }) => {
   const currentUser = useContext(CurrentUserContext);
   const isLiked = isSaved ? false : data.owners.includes(currentUser._id);
+  const handleClick = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    return isSaved ? deleteMovie(data) : handleLikeMovie(data);
+  };
 
   return (
     <li className="movie">
@@ -22,7 +27,7 @@ const MoviesCard = ({ data, handleLikeMovie, deleteMovie, isSaved }) => {
             }`}
             src={isSaved ? deleteIcon : isLiked ? liked : like}
             alt={isSaved ? 'Удалить из коллекции' : 'Добавить в коллекцию'}
-            onClick={isSaved ? () => deleteMovie(data) : () => handleLikeMovie(data)}
+            onClick={handleClick}
           />
         </div>
         <img className="movie__poster" src={data.image} alt="Постер к фильму" />

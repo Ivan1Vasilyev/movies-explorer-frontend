@@ -5,7 +5,6 @@ export const responseHandler = (response) =>
   response.ok ? response.json() : Promise.reject(response);
 
 const multiFetch = (method, route) => async (data) => {
-  console.log(baseUrl);
   const response = await fetch(`${baseUrl}/${route}`, {
     method,
     headers,

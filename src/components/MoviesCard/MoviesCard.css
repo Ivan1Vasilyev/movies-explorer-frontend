@@ -68,7 +68,7 @@
 }
 
 @media screen and (max-width: 520px) {
-  .movie {
+  .movie__link {
     flex-direction: column-reverse;
     padding: 0;
   }
