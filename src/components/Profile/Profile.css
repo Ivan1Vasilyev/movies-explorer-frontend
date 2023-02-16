@@ -127,7 +127,7 @@
   transition: 0.3s;
   box-sizing: border-box;
   position: relative;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 .profile__logout:before {
