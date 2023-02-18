@@ -29,18 +29,32 @@
 .form__input {
   font-size: 14px;
   line-height: 1.21;
+  color: #fff;
   height: 27px;
-  font-size: 14px;
-  line-height: 1.21;
   padding: 0 0 5px;
   border: none;
   background-color: transparent;
   border-bottom: 1px solid #424242;
 }
 
+.form__input:-webkit-autofill {
+  transition: background-color 600000s 0s;
+  -webkit-text-fill-color: #fff;
+  caret-color: #fff;
+}
+
+.form__input::placeholder {
+  font-size: 14px;
+  line-height: 1.21;
+}
+
 .form__input:focus {
   border-bottom: 1px solid #4285f4;
   outline: none;
+}
+
+.form__input_onError {
+  color: #ee3465;
 }
 
 .form__error {
@@ -49,6 +63,13 @@
 
 .form__submit-area {
   text-align: center;
+}
+
+.form__submit-error {
+  color: #ff004c;
+  font-size: 11px;
+  line-height: 1.18;
+  margin: 1px auto 17px;
 }
 
 .form__submit-button {

@@ -1,8 +1,14 @@
 .movie {
   background: #2f2f2f;
+}
+
+.movie__link {
   padding: 6px 6px 6px 22px;
   display: flex;
+  width: 100%;
   justify-content: space-between;
+  text-decoration: none;
+  color: inherit;
   box-sizing: border-box;
 }
 
@@ -62,7 +68,7 @@
 }
 
 @media screen and (max-width: 520px) {
-  .movie {
+  .movie__link {
     flex-direction: column-reverse;
     padding: 0;
   }

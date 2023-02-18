@@ -1,42 +1,33 @@
 import './SearchForm.css';
 import FilterCheckbox from '../FilterCheckbox/FilterCheckbox';
-import Field from '../Field/Field';
-import { useEffect, useState } from 'react';
+import useSearchForm from '../../hooks/useSearchForm';
+import { useCallback, useEffect } from 'react';
 
-const SearchForm = () => {
-  const [value, setValue] = useState('');
-  const [errorText, setErrorText] = useState('');
-
-  const handleChange = (e) => setValue(e.target.value);
+const SearchForm = ({ isFilterOn, setIsFilterOn, keyWord, setKeyWord }) => {
+  const { value, setValue, isSearchEmpty, handleChange, handleSubmit } = useSearchForm(setKeyWord);
 
   useEffect(() => {
-    if (value !== '') setErrorText('');
-  }, [value]);
+    if (keyWord) setValue(keyWord);
+  }, [keyWord]);
 
-  const handleSubmit = () => {
-    if (value === '') setErrorText('Нужно ввести ключевое слово');
-  };
+  const toggleFilter = useCallback((e) => setIsFilterOn(e.target.checked), []);
 
   return (
-    <section className="searchform">
-      <Field
-        placeholder="Фильм"
-        inputStyle="searchform__input"
+    <form className="searchform" onSubmit={handleSubmit}>
+      <input
+        name="movie"
+        type="text"
         value={value}
         onChange={handleChange}
-        errtext={errorText}
-        errorStyle={''}
+        placeholder="Фильм"
+        className="searchform__input"
       />
-      <button
-        className="searchform__submit"
-        type="button"
-        aria-label="Найти"
-        onClick={handleSubmit}
-      >
+      <span className="searchform__error">{isSearchEmpty && 'Введите ключевое слово'}</span>
+      <button className="searchform__submit" type="submit" aria-label="Найти">
         Найти
       </button>
-      <FilterCheckbox />
-    </section>
+      <FilterCheckbox toggler={toggleFilter} value={isFilterOn} />
+    </form>
   );
 };
 export default SearchForm;

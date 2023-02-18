@@ -2,47 +2,68 @@ import './Profile.css';
 import Field from '../Field/Field';
 import Header from '../Header/Header';
 import { Link } from 'react-router-dom';
+import { CurrentUserContext } from '../../contexts/CurrentUserContext';
+import { useContext, useEffect } from 'react';
+import useForm from '../../hooks/useForm';
+import useErrorShielding from '../../hooks/useErrorShielding';
 
 const Profile = (props) => {
+  const currentUser = useContext(CurrentUserContext);
+  const { formik, disabled } = useForm({ name: '', email: '' }, props.onSubmit);
+  const { touched, errors, resetForm } = formik;
+  const { isSubmitted, handleSubmit } = useErrorShielding(formik);
+
+  useEffect(() => {
+    resetForm({ values: { name: currentUser.name, email: currentUser.email } });
+  }, [currentUser]);
+
   return (
     <>
-      <Header loggedIn={true} place="account" />
-      <form className="profile page__element">
-        <h2 className="profile__title">Привет, Виталий!</h2>
+      <Header loggedIn={props.loggedIn} place="account" />
+      <form className="profile page__element" onSubmit={handleSubmit}>
+        <h2 className="profile__title">Привет, {currentUser.name}!</h2>
         <Field
+          className={`profile__input ${touched.name && errors.name && 'profile__input_onError'}`}
+          labelStyle="profile__label"
+          errorStyle="profile__error"
           name="name"
           type="text"
           label="Имя"
-          labelStyle="profile__label"
-          inputStyle="profile__input"
-          value="Виталий"
-          errtext="Что-то пошло не так..."
-          errorStyle="profile__error"
+          formik={formik}
         />
         <Field
-          name="Email"
+          className={`profile__input ${touched.email && errors.email && 'profile__input_onError'}`}
+          labelStyle="profile__label"
+          errorStyle="profile__error"
+          name="email"
           type="email"
           label="E-mail"
-          labelStyle="profile__label"
-          inputStyle="profile__input"
-          value="pochta@yandex.ru"
-          errorStyle="profile__error"
+          formik={formik}
         />
 
         <div className="profile__submit-area">
-          <p className="profile__submit-error">При обновлении профиля произошла ошибка.</p>
-          <button
-            className={`profile__submit-button ${
-              props.disabled && 'profile__submit-button_disabled'
+          <p
+            className={`profile__submit-info ${
+              props.errorMessage && 'profile__submit-info_onError'
             }`}
+          >
+            {isSubmitted && (props.errorMessage || 'Данные профиля обновлены')}
+          </p>
+          <button
+            className={`profile__submit-button ${disabled && 'profile__submit-button_disabled'}`}
             type="submit"
             aria-label="Редактировать"
+            disabled={disabled}
           >
             Редактировать
           </button>
-          <Link to={'/'} className="profile__link" aria-label="Выйти из аккаунта">
+          <button
+            onClick={props.onLogout}
+            className="profile__logout"
+            aria-label="Выйти из аккаунта"
+          >
             Выйти из аккаунта
-          </Link>
+          </button>
         </div>
       </form>
     </>

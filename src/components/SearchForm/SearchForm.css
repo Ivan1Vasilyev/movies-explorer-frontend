@@ -35,7 +35,15 @@
   outline: none;
 }
 
+.searchform__input:-webkit-autofill {
+  transition: background-color 600000s 0s, color 600000s 0s;
+}
+
 .searchform__error {
+  min-height: 12px;
+  color: #ee3465;
+  font-size: 10px;
+  line-height: 1.2;
   grid-area: error;
 }
 

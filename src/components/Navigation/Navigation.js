@@ -11,15 +11,10 @@ import {
 import { useEffect, useState } from 'react';
 
 const Navigation = ({ loggedIn, isOpen, onClose, place }) => {
-  const [currentPlace, setCurrentPlace] = useState({
-    movies: false,
-    savedMovies: false,
-    account: false,
-    main: false,
-  });
+  const [currentPlace, setCurrentPlace] = useState({});
 
   useEffect(() => {
-    if (place) setCurrentPlace((state) => ({ ...state, [place]: true }));
+    if (place) setCurrentPlace({ [place]: true });
   }, [place]);
 
   return (

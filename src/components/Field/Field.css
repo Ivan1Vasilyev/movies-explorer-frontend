@@ -1,15 +1,3 @@
-.field__input {
-  color: #ffffff;
-}
-
-.field__input:-webkit-autofill {
-  transition-delay: 36000s;
-}
-
-.field__input_onError {
-  color: #ee3465;
-}
-
 .field__error {
   min-height: 12px;
   color: #ee3465;

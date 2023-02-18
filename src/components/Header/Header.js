@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Logo from '../Logo/Logo';
 import Navigation from '../Navigation/Navigation';
 import { debounce } from '../../utils/helpers';
+import { CHANGE_HEADER_WIDTH } from '../../utils/constants';
 
 const Header = (props) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,7 +13,7 @@ const Header = (props) => {
   useEffect(() => {
     if (!isMenuOpen) return;
 
-    const sizeListener = debounce(setIsMenuOpen);
+    const sizeListener = debounce(CHANGE_HEADER_WIDTH, setIsMenuOpen, false);
     window.addEventListener('resize', sizeListener);
 
     return () => window.removeEventListener('resize', sizeListener);
