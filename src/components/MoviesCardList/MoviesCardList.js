@@ -81,7 +81,12 @@ const MoviesCardList = ({
           {isSaved
             ? null
             : limiter < moviesData.length && (
-                <button className="movies-list__button" onClick={addMoviesClick}>
+                <button
+                  onClick={addMoviesClick}
+                  className="movies-list__button"
+                  type="button"
+                  aria-label="Ещё"
+                >
                   Ещё
                 </button>
               )}

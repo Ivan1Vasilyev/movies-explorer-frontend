@@ -37,13 +37,11 @@ const SavedMovies = (props) => {
   }, []);
 
   useEffect(() => {
-    const getResult = () => {
+    if (keyWord !== '') {
       const allSavedMovies = JSON.parse(localStorage.getItem(allSavedMoviesKey));
       setFoundMoviesList(allSavedMovies.filter((item) => wordFilter(keyWord, item)));
       if (!isSubmitted) setIsSubmitted(true);
-    };
-
-    if (keyWord !== '') getResult();
+    }
   }, [keyWord]);
 
   return (
