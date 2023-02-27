@@ -49,6 +49,8 @@ const Movies = (props) => {
           keyWord,
         }),
       );
+
+      setLoading(false);
     };
     if (keyWord !== '') getResult();
   }, [keyWord, isFilterOn]);

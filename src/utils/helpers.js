@@ -85,6 +85,7 @@ export const getAllDefaultMovies = async (getMovies, setLoading) => {
 
     const defaultMovies = await getMovies();
     allMovies = defaultMovies.map(adaptDataToPage);
+    console.log(allMovies);
     localStorage.setItem(ALL_MOVIES_KEY, JSON.stringify(allMovies));
 
     if (setLoading) setLoading(false);
@@ -95,12 +96,11 @@ export const getAllDefaultMovies = async (getMovies, setLoading) => {
 
 const getAllSavedMovies = async (getSavedMovies, currentUserId) => {
   const key = getAllSavedMoviesKey(currentUserId);
-  let allSavedMovies = JSON.parse(localStorage.getItem(key));
 
-  if (!allSavedMovies) {
-    allSavedMovies = await getSavedMovies();
-    localStorage.setItem(key, JSON.stringify(allSavedMovies));
-  }
+  const allSavedMovies =
+    localStorage.getItem(key) === 'undefined'
+      ? await getSavedMovies()
+      : JSON.parse(localStorage.getItem(key));
 
   return allSavedMovies;
 };
