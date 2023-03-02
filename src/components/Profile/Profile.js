@@ -58,8 +58,9 @@ const Profile = (props) => {
             Редактировать
           </button>
           <button
-            onClick={props.onLogout}
             className="profile__logout"
+            onClick={props.onLogout}
+            type="button"
             aria-label="Выйти из аккаунта"
           >
             Выйти из аккаунта

@@ -3,14 +3,14 @@ import FilterCheckbox from '../FilterCheckbox/FilterCheckbox';
 import useSearchForm from '../../hooks/useSearchForm';
 import { useCallback, useEffect } from 'react';
 
-const SearchForm = ({ isFilterOn, setIsFilterOn, keyWord, setKeyWord }) => {
+const SearchForm = ({ isOnlyShorts, setIsOnlyShorts, keyWord, setKeyWord }) => {
   const { value, setValue, isSearchEmpty, handleChange, handleSubmit } = useSearchForm(setKeyWord);
 
   useEffect(() => {
     if (keyWord) setValue(keyWord);
   }, [keyWord]);
 
-  const toggleFilter = useCallback((e) => setIsFilterOn(e.target.checked), []);
+  const toggleFilter = useCallback((e) => setIsOnlyShorts(e.target.checked), []);
 
   return (
     <form className="searchform" onSubmit={handleSubmit}>
@@ -26,7 +26,7 @@ const SearchForm = ({ isFilterOn, setIsFilterOn, keyWord, setKeyWord }) => {
       <button className="searchform__submit" type="submit" aria-label="Найти">
         Найти
       </button>
-      <FilterCheckbox toggler={toggleFilter} value={isFilterOn} />
+      <FilterCheckbox toggler={toggleFilter} value={isOnlyShorts} />
     </form>
   );
 };

@@ -30,7 +30,7 @@ import {
   getMoviesId,
   updateAllMoviesFromSaved,
   updateAllMovies,
-  removeSavedMovieFromStore,
+  deleteSavedMovieFromStore,
   addSavedMovieToStore,
 } from '../../utils/helpers';
 
@@ -100,7 +100,7 @@ const App = () => {
     useCallback(
       async (movie) => {
         const deletingMovie = await MainApi.deleteMovie(movie._id);
-        await removeSavedMovieFromStore(deletingMovie, currentUser._id, getSavedMovies);
+        await deleteSavedMovieFromStore(deletingMovie, currentUser._id, getSavedMovies);
         await updateAllMoviesFromSaved(deletingMovie, getDefaultMovies, currentUser._id);
         return deletingMovie;
       },
@@ -113,7 +113,7 @@ const App = () => {
   const deleteMovie = async (movie) => {
     const movieId = await getMoviesId(movie.movieId, getSavedMovies, currentUser._id);
     const deletingMovie = await MainApi.deleteMovie(movieId);
-    await removeSavedMovieFromStore(deletingMovie, currentUser._id, getSavedMovies);
+    await deleteSavedMovieFromStore(deletingMovie, currentUser._id, getSavedMovies);
     movie.owners = movie.owners.filter((m) => m !== currentUser._id);
     return movie;
   };
@@ -132,8 +132,7 @@ const App = () => {
           ? await deleteMovie(movie)
           : await addMovie(movie);
 
-        updateAllMovies(response);
-
+        await updateAllMovies(response, getDefaultMovies);
         return response;
       },
       [currentUser._id],

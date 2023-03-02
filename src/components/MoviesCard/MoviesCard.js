@@ -6,13 +6,13 @@ import { parseDuration } from '../../utils/helpers';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import { useContext } from 'react';
 
-const MoviesCard = ({ data, handleLikeMovie, deleteMovie, isSaved }) => {
+const MoviesCard = ({ data, handleLikeMovie, isSaved }) => {
   const currentUser = useContext(CurrentUserContext);
   const isLiked = isSaved ? false : data.owners.includes(currentUser._id);
   const handleClick = (e) => {
     e.stopPropagation();
     e.preventDefault();
-    return isSaved ? deleteMovie(data) : handleLikeMovie(data);
+    return handleLikeMovie(data);
   };
 
   return (

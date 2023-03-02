@@ -6,13 +6,13 @@ import Footer from '../Footer/Footer';
 import Preloader from '../Preloader/Preloader';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { wordFilter, durationFilter, getAllDefaultMovies, updateLikes } from '../../utils/helpers';
+import { getAllDefaultMovies, updateLikes, moviesFilter } from '../../utils/helpers';
 
 const Movies = (props) => {
   const currentUser = useContext(CurrentUserContext);
   const storageKey = currentUser._id;
   const [loading, setLoading] = useState(false);
-  const [isFilterOn, setIsFilterOn] = useState(false);
+  const [isOnlyShorts, setIsOnlyShorts] = useState(false);
   const [keyWord, setKeyWord] = useState('');
   const [foundMoviesList, setFoundMoviesList] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -27,7 +27,7 @@ const Movies = (props) => {
   useEffect(() => {
     if (localStorage.getItem(storageKey)) {
       const config = JSON.parse(localStorage.getItem(storageKey));
-      setIsFilterOn(config.isFilterOn);
+      setIsOnlyShorts(config.isOnlyShorts);
       setKeyWord(config.keyWord);
     }
   }, []);
@@ -40,28 +40,26 @@ const Movies = (props) => {
       }
 
       const allMovies = await getAllDefaultMovies(props.getDefaultMovies, setLoading);
-      setFoundMoviesList(allMovies.filter((item) => wordFilter(keyWord, item)));
+      setFoundMoviesList(allMovies.filter((movie) => moviesFilter(movie, keyWord, isOnlyShorts)));
 
       localStorage.setItem(
         storageKey,
         JSON.stringify({
-          isFilterOn,
+          isOnlyShorts,
           keyWord,
         }),
       );
-
-      setLoading(false);
     };
     if (keyWord !== '') getResult();
-  }, [keyWord, isFilterOn]);
+  }, [keyWord, isOnlyShorts]);
 
   return (
     <>
       <Header loggedIn={props.loggedIn} place={'movies'} />
       <main className="movies page__element">
         <SearchForm
-          isFilterOn={isFilterOn}
-          setIsFilterOn={setIsFilterOn}
+          isOnlyShorts={isOnlyShorts}
+          setIsOnlyShorts={setIsOnlyShorts}
           keyWord={keyWord}
           setKeyWord={setKeyWord}
         />
@@ -70,7 +68,7 @@ const Movies = (props) => {
         ) : (
           <MoviesCardList
             handleLikeMovie={handleLikeMovie}
-            moviesData={isFilterOn ? foundMoviesList.filter(durationFilter) : foundMoviesList}
+            moviesData={foundMoviesList}
             isSubmitted={isSubmitted}
             errorMessage={props.errorMessage}
           />

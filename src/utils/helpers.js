@@ -1,14 +1,20 @@
-import { ALL_MOVIES_KEY, SERVER_ERROR_MESSAGE, TYPE_ERROR_MESSAGE } from './constants';
+import {
+  DEFAULT_MOVIES_KEY,
+  SERVER_ERROR_MESSAGE,
+  TYPE_ERROR_MESSAGE,
+  SHORT_FILM_DURATION,
+  DEFAULT_MOVIES_URL,
+} from './constants';
 
-export const debounce = (size, setter, argForBigScreen, argForSmallScreen) => {
+export const debounce = (size, setter, bigScreenParam, smallScreenParam) => {
   let isCooldown = false;
 
   return (e) => {
     if (isCooldown) return;
     if (e.target.innerWidth > size) {
-      setter(argForBigScreen);
-    } else if (argForSmallScreen) {
-      setter(argForSmallScreen);
+      setter(bigScreenParam);
+    } else if (smallScreenParam) {
+      setter(smallScreenParam);
     }
     isCooldown = true;
     setTimeout(() => (isCooldown = false), 100);
@@ -19,7 +25,7 @@ export const handleError = async (err, errorMessage) => {
   const { status, name } = err;
   console.log(err);
   if (name === 'TypeError') return TYPE_ERROR_MESSAGE;
-  if (String(status).startsWith('5')) return errorMessage || SERVER_ERROR_MESSAGE;
+  if (status >= 500) return errorMessage || SERVER_ERROR_MESSAGE;
   const error = await err.json();
   console.log(error);
   return error.message;
@@ -31,11 +37,11 @@ export const parseDuration = (duration) => {
   return hours ? (minutes ? `${hours}ч ${minutes}м` : `${hours}ч`) : `${minutes}м`;
 };
 
-export const durationFilter = (movie) => movie.duration < 41;
+const durationFilter = (movie) => movie.duration <= SHORT_FILM_DURATION;
 
-export const wordFilter = (word, movie) => {
+const wordFilter = (movie, keyWord) => {
   const { country, director, description, nameRU, nameEN } = movie;
-  const search = new RegExp(word, 'i');
+  const search = new RegExp(keyWord, 'i');
   return (
     search.test(country) ||
     search.test(director) ||
@@ -45,14 +51,21 @@ export const wordFilter = (word, movie) => {
   );
 };
 
+export const moviesFilter = (movie, keyWord, isOnlyShorts) => {
+  const byWord = wordFilter(movie, keyWord);
+  const isShort = durationFilter(movie);
+  const result = isOnlyShorts ? byWord && isShort : byWord;
+  return result;
+};
+
 const adaptDataToPage = (data) => ({
   country: data.country,
   director: data.director,
   duration: data.duration,
   description: data.description,
-  image: `https://api.nomoreparties.co/${data.image.url}`,
+  image: `${DEFAULT_MOVIES_URL}${data.image.url}`,
   trailerLink: data.trailerLink,
-  thumbnail: `https://api.nomoreparties.co/${data.image.formats.thumbnail.url}`,
+  thumbnail: `${DEFAULT_MOVIES_URL}${data.image.formats.thumbnail.url}`,
   movieId: data.id,
   nameRU: data.nameRU,
   nameEN: data.nameEN,
@@ -77,83 +90,92 @@ export const adaptDataToDB = (data, id) => ({
 
 export const getAllSavedMoviesKey = (id) => `${id}all`;
 
-export const getAllDefaultMovies = async (getMovies, setLoading) => {
-  let allMovies = JSON.parse(localStorage.getItem(ALL_MOVIES_KEY));
+const checkData = (data) => data === null || data[0] !== '[';
 
-  if (!allMovies) {
+export const getAllDefaultMovies = async (getMovies, setLoading) => {
+  const data = localStorage.getItem(DEFAULT_MOVIES_KEY);
+
+  if (checkData(data)) {
     if (setLoading) setLoading(true);
 
-    const defaultMovies = await getMovies();
-    allMovies = defaultMovies.map(adaptDataToPage);
-    console.log(allMovies);
-    localStorage.setItem(ALL_MOVIES_KEY, JSON.stringify(allMovies));
+    const allMovies = await getMovies();
+    const defaultMovies = allMovies.map(adaptDataToPage);
+    localStorage.setItem(DEFAULT_MOVIES_KEY, JSON.stringify(defaultMovies));
 
     if (setLoading) setLoading(false);
+    return defaultMovies;
+  } else {
+    return JSON.parse(data);
   }
-
-  return allMovies;
 };
 
-const getAllSavedMovies = async (getSavedMovies, currentUserId) => {
+export const getAllSavedMovies = async (getMovies, currentUserId, setLoading) => {
   const key = getAllSavedMoviesKey(currentUserId);
+  const data = localStorage.getItem(key);
 
-  const allSavedMovies =
-    localStorage.getItem(key) === 'undefined'
-      ? await getSavedMovies()
-      : JSON.parse(localStorage.getItem(key));
+  if (checkData(data)) {
+    if (setLoading) setLoading(true);
 
-  return allSavedMovies;
+    const savedMovies = await getMovies();
+    localStorage.setItem(key, JSON.stringify(savedMovies));
+
+    if (setLoading) setLoading(false);
+    return savedMovies;
+  } else {
+    return JSON.parse(data);
+  }
 };
 
-const handleLocalStore = (add) => async (movie, currentUserId, getSavedMovies) => {
+const handleSavedMoviesStore = (handle) => async (movie, currentUserId, getSavedMovies) => {
   const key = getAllSavedMoviesKey(currentUserId);
-  const savedMovies = JSON.parse(localStorage.getItem(key));
+  const data = localStorage.getItem(key);
 
-  if (!savedMovies) {
-    const allSavedMovies = await getSavedMovies();
-    localStorage.setItem(key, JSON.stringify(allSavedMovies));
+  if (checkData(data)) {
+    localStorage.setItem(key, JSON.stringify(await getSavedMovies()));
     return;
   }
 
-  if (add) {
-    savedMovies.push(movie);
-    localStorage.setItem(key, JSON.stringify(savedMovies));
-  } else {
-    localStorage.setItem(key, JSON.stringify(savedMovies.filter((m) => m._id !== movie._id)));
-  }
+  const updatedSavedMovies = handle(JSON.parse(data), movie);
+  localStorage.setItem(key, JSON.stringify(updatedSavedMovies));
 };
 
-export const removeSavedMovieFromStore = handleLocalStore();
+export const deleteSavedMovieFromStore = handleSavedMoviesStore((savedMovies, movie) => {
+  return savedMovies.filter((m) => m._id !== movie._id);
+});
 
-export const addSavedMovieToStore = handleLocalStore(true);
+export const addSavedMovieToStore = handleSavedMoviesStore((savedMovies, movie) => {
+  savedMovies.push(movie);
+  return savedMovies;
+});
 
 export const getMoviesId = async (movieId, getSavedMovies, currentUserId) => {
-  const allSavedMovies = await getAllSavedMovies(getSavedMovies, currentUserId);
-  return allSavedMovies.find((item) => item.movieId === movieId)._id;
+  const savedMovies = await getAllSavedMovies(getSavedMovies, currentUserId);
+  return savedMovies.find((item) => item.movieId === movieId)._id;
 };
 
-export const updateAllMoviesFromSaved = async (deletingMovie, getDefaultMovies, currentUserId) => {
-  const allMovies = await getAllDefaultMovies(getDefaultMovies);
-  const index = allMovies.findIndex((m) => m.movieId === deletingMovie.movieId);
-  allMovies[index].owners = allMovies[index].owners.filter((m) => m !== currentUserId);
-  localStorage.setItem(ALL_MOVIES_KEY, JSON.stringify(allMovies));
+export const updateAllMoviesFromSaved = async (movie, getDefaultMovies, currentUserId) => {
+  const defaultMovies = await getAllDefaultMovies(getDefaultMovies);
+  const index = defaultMovies.findIndex((m) => m.movieId === movie.movieId);
+  defaultMovies[index].owners = defaultMovies[index].owners.filter((m) => m !== currentUserId);
+  localStorage.setItem(DEFAULT_MOVIES_KEY, JSON.stringify(defaultMovies));
 };
 
-export const updateAllMovies = (response) => {
-  const allMovies = JSON.parse(localStorage.getItem(ALL_MOVIES_KEY)).map((m) =>
-    m.movieId === response.movieId ? response : m,
+export const updateAllMovies = async (response, getDefaultMovies) => {
+  const defaultMovies = await getAllDefaultMovies(getDefaultMovies);
+  localStorage.setItem(
+    DEFAULT_MOVIES_KEY,
+    JSON.stringify(defaultMovies.map((m) => (m.movieId === response.movieId ? response : m))),
   );
-  localStorage.setItem(ALL_MOVIES_KEY, JSON.stringify(allMovies));
 };
 
 export const updateLikes = async (getDefaultMovies, getSavedMovies, currentUserId) => {
   const savedMovies = await getAllSavedMovies(getSavedMovies, currentUserId);
-  const allMovies = await getAllDefaultMovies(getDefaultMovies);
+  const defaultMovies = await getAllDefaultMovies(getDefaultMovies);
   savedMovies.forEach((s) => {
-    const index = allMovies.findIndex((m) => m.movieId === s.movieId);
-    if (!allMovies[index].owners.includes(currentUserId)) {
-      allMovies[index].owners.push(currentUserId);
+    const index = defaultMovies.findIndex((m) => m.movieId === s.movieId);
+    if (!defaultMovies[index].owners.includes(currentUserId)) {
+      defaultMovies[index].owners.push(currentUserId);
     }
   });
-  localStorage.setItem(ALL_MOVIES_KEY, JSON.stringify(allMovies));
+  localStorage.setItem(DEFAULT_MOVIES_KEY, JSON.stringify(defaultMovies));
 };

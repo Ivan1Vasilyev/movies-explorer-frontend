@@ -10,44 +10,39 @@ import {
   CHANGE_STEP_WIDTH,
 } from '../../utils/constants';
 
-const MoviesCardList = ({
-  moviesData,
-  isSubmitted,
-  handleLikeMovie,
-  deleteMovie,
-  isSaved,
-  errorMessage,
-}) => {
+const MoviesCardList = ({ moviesData, isSubmitted, handleLikeMovie, isSaved, errorMessage }) => {
   const [resultMoviesList, setResultMoviesList] = useState([]);
   const [limiter, setLimiter] = useState(COUNT_BIG_SCREEN);
   const [addCounter, setAddCounter] = useState(STEP_BIG_SCREEN);
 
   const addMoviesClick = useCallback(() => setLimiter((state) => state + addCounter), [addCounter]);
 
-  const setter = (states) => {
+  const setButton = (states) => {
     setLimiter(states[0]);
     setAddCounter(states[1]);
   };
 
   useEffect(() => {
-    if (isSaved || !moviesData.length) return;
+    if (isSaved) {
+      setResultMoviesList(moviesData);
+      return;
+    }
 
     setResultMoviesList(moviesData.filter((_, index) => index < limiter));
   }, [moviesData, limiter]);
 
   useEffect(() => {
     if (isSaved) return;
-    if (resultMoviesList === undefined) return;
     const { length } = resultMoviesList;
 
     if (!length && window.innerWidth < CHANGE_STEP_WIDTH) {
-      setter([COUNT_SMALL_SCREEN, STEP_SMALL_SCREEN]);
+      setButton([COUNT_SMALL_SCREEN, STEP_SMALL_SCREEN]);
       return;
     }
 
     const moviesSizeListener = debounce(
       CHANGE_STEP_WIDTH,
-      setter,
+      setButton,
       [length < COUNT_BIG_SCREEN ? COUNT_BIG_SCREEN : length, STEP_BIG_SCREEN],
       [length === COUNT_BIG_SCREEN ? COUNT_SMALL_SCREEN : length, STEP_SMALL_SCREEN],
     );
@@ -58,38 +53,32 @@ const MoviesCardList = ({
 
   return (
     <section className="movies-list">
-      {moviesData?.length ? (
+      {moviesData.length ? (
         <>
           <ul
             className={`movies-list__container ${
               limiter > moviesData.length && 'movies-list__container_full'
             }`}
           >
-            {isSaved
-              ? moviesData.map((item) => (
-                  <MoviesCard
-                    key={item._id}
-                    deleteMovie={deleteMovie}
-                    data={item}
-                    isSaved={isSaved}
-                  />
-                ))
-              : resultMoviesList.map((item) => (
-                  <MoviesCard key={item.movieId} handleLikeMovie={handleLikeMovie} data={item} />
-                ))}
+            {resultMoviesList.map((movie) => (
+              <MoviesCard
+                key={movie.movieId}
+                handleLikeMovie={handleLikeMovie}
+                data={movie}
+                isSaved={isSaved}
+              />
+            ))}
           </ul>
-          {isSaved
-            ? null
-            : limiter < moviesData.length && (
-                <button
-                  onClick={addMoviesClick}
-                  className="movies-list__button"
-                  type="button"
-                  aria-label="Ещё"
-                >
-                  Ещё
-                </button>
-              )}
+          {!isSaved && limiter < moviesData.length && (
+            <button
+              onClick={addMoviesClick}
+              className="movies-list__button"
+              type="button"
+              aria-label="Ещё"
+            >
+              Ещё
+            </button>
+          )}
         </>
       ) : (
         <p className="movies-list__empty">{errorMessage || (isSubmitted && 'Ничего не найдено')}</p>
