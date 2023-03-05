@@ -1,8 +1,6 @@
 import './SavedMovies.css';
 import SearchForm from '../SearchForm/SearchForm';
 import MoviesCardList from '../MoviesCardList/MoviesCardList';
-import Header from '../Header/Header';
-import Footer from '../Footer/Footer';
 import Preloader from '../Preloader/Preloader';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import { useCallback, useContext, useEffect, useState } from 'react';
@@ -50,29 +48,25 @@ const SavedMovies = (props) => {
   }, [keyWord, isOnlyShorts]);
 
   return (
-    <>
-      <Header loggedIn={props.loggedIn} place={'savedMovies'} />
-      <main className="movies page__element">
-        <SearchForm
-          isOnlyShorts={isOnlyShorts}
-          setIsOnlyShorts={setIsOnlyShorts}
-          keyWord={keyWord}
-          setKeyWord={setKeyWord}
+    <main className="movies page__element">
+      <SearchForm
+        isOnlyShorts={isOnlyShorts}
+        setIsOnlyShorts={setIsOnlyShorts}
+        keyWord={keyWord}
+        setKeyWord={setKeyWord}
+      />
+      {loading ? (
+        <Preloader />
+      ) : (
+        <MoviesCardList
+          isSaved={true}
+          handleLikeMovie={deleteMovie}
+          moviesData={foundMoviesList}
+          isSubmitted={isSubmitted}
+          errorMessage={props.errorMessage}
         />
-        {loading ? (
-          <Preloader />
-        ) : (
-          <MoviesCardList
-            isSaved={true}
-            handleLikeMovie={deleteMovie}
-            moviesData={foundMoviesList}
-            isSubmitted={isSubmitted}
-            errorMessage={props.errorMessage}
-          />
-        )}
-      </main>
-      <Footer />
-    </>
+      )}
+    </main>
   );
 };
 

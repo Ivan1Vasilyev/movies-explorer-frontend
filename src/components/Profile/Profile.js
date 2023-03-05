@@ -1,7 +1,5 @@
 import './Profile.css';
 import Field from '../Field/Field';
-import Header from '../Header/Header';
-import { Link } from 'react-router-dom';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import { useContext, useEffect } from 'react';
 import useForm from '../../hooks/useForm';
@@ -18,56 +16,55 @@ const Profile = (props) => {
   }, [currentUser]);
 
   return (
-    <>
-      <Header loggedIn={props.loggedIn} place="account" />
-      <form className="profile page__element" onSubmit={handleSubmit}>
-        <h2 className="profile__title">Привет, {currentUser.name}!</h2>
-        <Field
-          className={`profile__input ${touched.name && errors.name && 'profile__input_onError'}`}
-          labelStyle="profile__label"
-          errorStyle="profile__error"
-          name="name"
-          type="text"
-          label="Имя"
-          formik={formik}
-        />
-        <Field
-          className={`profile__input ${touched.email && errors.email && 'profile__input_onError'}`}
-          labelStyle="profile__label"
-          errorStyle="profile__error"
-          name="email"
-          type="email"
-          label="E-mail"
-          formik={formik}
-        />
+    <form className="profile page__element" onSubmit={handleSubmit}>
+      <h2 className="profile__title">Привет, {currentUser.name}!</h2>
+      <Field
+        className={`profile__input${touched.name && errors.name ? ' profile__input_onError' : ''}`}
+        labelStyle="profile__label"
+        errorStyle="profile__error"
+        name="name"
+        type="text"
+        label="Имя"
+        formik={formik}
+      />
+      <Field
+        className={`profile__input${
+          touched.email && errors.email ? ' profile__input_onError' : ''
+        }`}
+        labelStyle="profile__label"
+        errorStyle="profile__error"
+        name="email"
+        type="email"
+        label="E-mail"
+        formik={formik}
+      />
 
-        <div className="profile__submit-area">
-          <p
-            className={`profile__submit-info ${
-              props.errorMessage && 'profile__submit-info_onError'
-            }`}
-          >
-            {isSubmitted && (props.errorMessage || 'Данные профиля обновлены')}
-          </p>
-          <button
-            className={`profile__submit-button ${disabled && 'profile__submit-button_disabled'}`}
-            type="submit"
-            aria-label="Редактировать"
-            disabled={disabled}
-          >
-            Редактировать
-          </button>
-          <button
-            className="profile__logout"
-            onClick={props.onLogout}
-            type="button"
-            aria-label="Выйти из аккаунта"
-          >
-            Выйти из аккаунта
-          </button>
-        </div>
-      </form>
-    </>
+      <div className="profile__submit-area">
+        <p
+          className={`profile__submit-info${
+            props.errorMessage ? ' profile__submit-info_onError' : ''
+          }`}
+        >
+          {isSubmitted && (props.errorMessage || 'Данные профиля обновлены')}
+        </p>
+        <button
+          className={`profile__submit-button${disabled ? ' profile__submit-button_disabled' : ''}`}
+          type="submit"
+          aria-label="Редактировать"
+          disabled={disabled}
+        >
+          Редактировать
+        </button>
+        <button
+          className="profile__logout"
+          onClick={props.onLogout}
+          type="button"
+          aria-label="Выйти из аккаунта"
+        >
+          Выйти из аккаунта
+        </button>
+      </div>
+    </form>
   );
 };
 

@@ -3,12 +3,33 @@ import { useState, useEffect } from 'react';
 import Logo from '../Logo/Logo';
 import Navigation from '../Navigation/Navigation';
 import { debounce } from '../../utils/helpers';
-import { CHANGE_HEADER_WIDTH } from '../../utils/constants';
+import {
+  ROUTE_SIGN_IN,
+  ROUTE_SIGN_UP,
+  ROUTE_MAIN,
+  CHANGE_HEADER_WIDTH,
+} from '../../utils/constants';
 
-const Header = (props) => {
+const Header = ({ place, ...props }) => {
+  const [isHidden, setIsHidden] = useState(false);
+  const [isMain, setIsMain] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toggler = () => setIsMenuOpen((state) => !state);
   const closeMenu = () => setIsMenuOpen(false);
+
+  useEffect(() => {
+    if (place === ROUTE_SIGN_IN || place === ROUTE_SIGN_UP) {
+      setIsHidden(true);
+    } else {
+      setIsHidden(false);
+    }
+
+    if (place === ROUTE_MAIN) {
+      setIsMain(true);
+    } else {
+      setIsMain(false);
+    }
+  }, [place]);
 
   useEffect(() => {
     if (!isMenuOpen) return;
@@ -20,25 +41,32 @@ const Header = (props) => {
   }, [isMenuOpen]);
 
   return (
-    <header className={`header page__element`}>
+    <header
+      className={`header${isHidden ? ' header_hidden' : ''}${isMain ? ' header_place_main' : ''}`}
+    >
       <div
-        className={`header__overlay ${isMenuOpen && 'header__overlay_opened'}`}
+        className={`header__overlay${isMenuOpen ? ' header__overlay_opened' : ''}`}
         onClick={closeMenu}
       />
-      <Logo />
-      <Navigation
-        loggedIn={props.loggedIn}
-        isOpen={isMenuOpen}
-        onClose={closeMenu}
-        place={props.place}
-      />
-      {props.loggedIn && (
-        <button className={`header__menu ${isMenuOpen && 'header__menu_active'}`} onClick={toggler}>
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-      )}
+      <div className="header__nav page__element">
+        <Logo />
+        <Navigation
+          loggedIn={props.loggedIn}
+          isOpen={isMenuOpen}
+          onClose={closeMenu}
+          place={place}
+        />
+        {props.loggedIn && (
+          <button
+            className={`header__menu${isMenuOpen ? ' header__menu_active' : ''}`}
+            onClick={toggler}
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        )}
+      </div>
     </header>
   );
 };

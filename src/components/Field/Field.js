@@ -14,7 +14,7 @@ const Field = ({ formik, name, label, labelStyle, errorStyle, ...props }) => (
       onFocus={formik.handleBlur}
       {...props}
     />
-    <span className={`field__error ${errorStyle}`}>
+    <span className={`field__error${errorStyle ? ` ${errorStyle}` : ''}`}>
       {formik.touched[name] ? formik.errors[name] : ''}
     </span>
   </>

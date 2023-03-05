@@ -16,7 +16,7 @@ const AuthForm = (props) => {
       <div className="form__submit-area">
         <p className="form__submit-error">{isSubmitted && props.errorMessage}</p>
         <button
-          className={`form__submit-button ${props.disabled && 'form__submit-button_disabled'}`}
+          className={`form__submit-button${props.disabled ? ' form__submit-button_disabled' : ''}`}
           type="submit"
           aria-label="Отправить данные"
           disabled={props.disabled}

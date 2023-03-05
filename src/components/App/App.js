@@ -7,6 +7,8 @@ import PageNotFound from '../PageNotFound/PageNotFound';
 import Movies from '../Movies/Movies';
 import SavedMovies from '../SavedMovies/SavedMovies';
 import Main from '../Main/Main';
+import Header from '../Header/Header';
+import Footer from '../Footer/Footer';
 import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
 import Popup from '../Popup/Popup';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
@@ -16,6 +18,7 @@ import {
   ROUTE_PROFILE,
   ROUTE_MOVIES,
   ROUTE_SAVED_MOVIES,
+  ROUTE_MAIN,
   LOAD_MOVIES_ERROR_MESSAGE,
   TOKEN_ERROR_MESSAGE,
   REGISTER_ERROR_MESSAGE,
@@ -81,7 +84,7 @@ const App = () => {
     await MainApi.logout({ _id: currentUser._id });
     setCurrentUser({});
     setLoggedIn(false);
-    navigate('/');
+    navigate(ROUTE_MAIN);
   }, TOKEN_ERROR_MESSAGE);
 
   const getDefaultMovies = apiWrapper(async () => {
@@ -157,6 +160,7 @@ const App = () => {
   return (
     <Page>
       <CurrentUserContext.Provider value={currentUser}>
+        <Header loggedIn={loggedIn} place={pathname} />
         <Routes>
           <Route
             path={ROUTE_SIGN_UP}
@@ -168,6 +172,7 @@ const App = () => {
             path={ROUTE_SIGN_IN}
             element={<Login onSubmit={login} errorMessage={errorMessage} loggedIn={loggedIn} />}
           />
+
           <Route
             path={ROUTE_MOVIES}
             element={
@@ -206,9 +211,14 @@ const App = () => {
               />
             }
           />
-          <Route exact path="/" element={<Main loggedIn={loggedIn} openPopup={openPopup} />} />
+          <Route
+            exact
+            path={ROUTE_MAIN}
+            element={<Main loggedIn={loggedIn} openPopup={openPopup} />}
+          />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
+        <Footer place={pathname} />
         <Popup isOpen={isPopupOpen} onClose={closePopup} errorMessage={errorMessage} />
       </CurrentUserContext.Provider>
     </Page>

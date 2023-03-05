@@ -56,8 +56,8 @@ const MoviesCardList = ({ moviesData, isSubmitted, handleLikeMovie, isSaved, err
       {moviesData.length ? (
         <>
           <ul
-            className={`movies-list__container ${
-              limiter > moviesData.length && 'movies-list__container_full'
+            className={`movies-list__container${
+              limiter > moviesData.length ? ' movies-list__container_full' : ''
             }`}
           >
             {resultMoviesList.map((movie) => (

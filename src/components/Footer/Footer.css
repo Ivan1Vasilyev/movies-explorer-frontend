@@ -7,9 +7,13 @@
   padding: 0 30px;
 }
 
+.footer_hidden {
+  display: none;
+}
+
 .footer__capture {
   color: #8b8b8b;
-  margin: 148px auto 20px;
+  margin: 147px auto 20px;
 }
 
 .footer__underline {
@@ -49,7 +53,7 @@
     padding: 0 10px;
   }
   .footer__capture {
-    margin-top: 129px;
+    margin-top: 128px;
   }
   .footer__underline {
     flex-direction: column-reverse;

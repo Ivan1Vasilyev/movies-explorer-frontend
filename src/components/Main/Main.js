@@ -1,26 +1,18 @@
 import './Main.css';
-import Header from '../Header/Header';
-import Footer from '../Footer/Footer';
 import Promo from '../Promo/Promo';
 import AboutProject from '../AboutProject/AboutProject';
 import Techs from '../Techs/Techs';
 import AboutMe from '../AboutMe/AboutMe';
 import Portfolio from '../Portfolio/Portfolio';
 
-const Main = ({ loggedIn }) => (
-  <>
-    <section className="main main_place_promo">
-      <Header place="main" loggedIn={loggedIn} />
-      <Promo />
-    </section>
+const Main = () => (
+  <main className="main">
+    <Promo />
     <AboutProject />
-    <section className="main main_place_tech">
-      <Techs />
-    </section>
+    <Techs />
     <AboutMe />
     <Portfolio />
-    <Footer />
-  </>
+  </main>
 );
 
 export default Main;

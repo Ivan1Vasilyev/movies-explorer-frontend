@@ -1,6 +1,21 @@
 .header {
   height: 74px;
   display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.header_hidden {
+  display: none;
+}
+
+.header_place_main {
+  background-color: #073042;
+}
+
+.header__nav {
+  display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 30px;
@@ -142,7 +157,7 @@
 }
 
 @media screen and (max-width: 520px) {
-  .header {
+  .header__nav {
     padding: 0 14px;
   }
   .header__menu_active {
@@ -156,7 +171,7 @@
   }
 
   .header__menu {
-    margin: 3px 9px 0 0;
+    margin: 0 9px 0 0;
     width: 22px;
     height: 21px;
   }

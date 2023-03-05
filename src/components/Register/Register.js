@@ -1,5 +1,5 @@
 import './Register.css';
-import { ROUTE_SIGN_IN } from '../../utils/constants';
+import { ROUTE_SIGN_IN, ROUTE_MAIN } from '../../utils/constants';
 import Field from '../Field/Field';
 import AuthForm from '../AuthForm/AuthForm';
 import useForm from '../../hooks/useForm';
@@ -9,7 +9,7 @@ const Register = (props) => {
   const { formik, disabled } = useForm({ name: '', email: '', password: '' }, props.onSubmit);
   const { touched, errors } = formik;
 
-  if (props.loggedIn) return <Navigate to="/" />;
+  if (props.loggedIn) return <Navigate to={ROUTE_MAIN} />;
 
   return (
     <AuthForm
@@ -23,7 +23,7 @@ const Register = (props) => {
       formik={formik}
     >
       <Field
-        className={`form__input ${touched.name && errors.name && 'form__input_onError'}`}
+        className={`form__input${touched.name && errors.name ? ' form__input_onError' : ''}`}
         labelStyle="form__label"
         errorStyle="form__error"
         name="name"
@@ -33,7 +33,7 @@ const Register = (props) => {
         placeholder="Введите имя"
       />
       <Field
-        className={`form__input ${touched.email && errors.email && 'form__input_onError'}`}
+        className={`form__input${touched.email && errors.email ? ' form__input_onError' : ''}`}
         labelStyle="form__label"
         errorStyle="form__error"
         name="email"
@@ -44,7 +44,9 @@ const Register = (props) => {
         autoComplete="email"
       />
       <Field
-        className={`form__input ${touched.password && errors.password && 'form__input_onError'}`}
+        className={`form__input${
+          touched.password && errors.password ? ' form__input_onError' : ''
+        }`}
         labelStyle="form__label"
         errorStyle="form__error"
         name="password"

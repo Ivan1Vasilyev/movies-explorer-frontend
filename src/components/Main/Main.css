@@ -3,19 +3,4 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-sizing: border-box;
-}
-
-.main_place_promo {
-  background-color: #073042;
-}
-
-.main_place_tech {
-  background-color: #272727;
-}
-
-@media screen and (max-width: 520px) {
-  .main_place_tech {
-    background-color: transparent;
-  }
 }

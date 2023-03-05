@@ -1,6 +1,6 @@
 import './Login.css';
 import AuthForm from '../AuthForm/AuthForm';
-import { ROUTE_SIGN_UP } from '../../utils/constants';
+import { ROUTE_SIGN_UP, ROUTE_MAIN } from '../../utils/constants';
 import Field from '../Field/Field';
 import useForm from '../../hooks/useForm';
 import { Navigate } from 'react-router-dom';
@@ -9,7 +9,7 @@ const Login = (props) => {
   const { formik, disabled } = useForm({ email: '', password: '' }, props.onSubmit);
   const { touched, errors } = formik;
 
-  if (props.loggedIn) return <Navigate to="/" />;
+  if (props.loggedIn) return <Navigate to={ROUTE_MAIN} />;
 
   return (
     <AuthForm
@@ -23,7 +23,7 @@ const Login = (props) => {
       formik={formik}
     >
       <Field
-        className={`form__input ${touched.email && errors.email && 'form__input_onError'}`}
+        className={`form__input${touched.email && errors.email ? ' form__input_onError' : ''}`}
         labelStyle="form__label"
         errorStyle="form__error"
         name="email"
@@ -34,7 +34,9 @@ const Login = (props) => {
         autoComplete="email"
       />
       <Field
-        className={`form__input ${touched.password && errors.password && 'form__input_onError'}`}
+        className={`form__input${
+          touched.password && errors.password ? ' form__input_onError' : ''
+        }`}
         labelStyle="form__label"
         errorStyle="form__error"
         name="password"
