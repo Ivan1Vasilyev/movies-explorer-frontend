@@ -45,14 +45,15 @@ const Navigation = ({ loggedIn, isOpen, onClose, place }) => {
           >
             Сохранённые фильмы
           </Link>
-          <Link
-            className={`nav__link nav__link_place_account${
-              currentPlace[ROUTE_PROFILE] ? ' nav__link_selected' : ''
-            }`}
-            to={ROUTE_PROFILE}
-            onClick={onClose}
-          >
-            Аккаунт
+          <Link className="nav__link nav__link_place_account" to={ROUTE_PROFILE} onClick={onClose}>
+            <p
+              className={`nav__link-text${
+                currentPlace[ROUTE_PROFILE] ? ' nav__link-text_selected' : ''
+              }`}
+            >
+              Аккаунт
+            </p>
+
             <img className="nav__account-icon" src={accountIcon} alt="Иконка аккаунта"></img>
           </Link>
         </>

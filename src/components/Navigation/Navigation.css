@@ -1,5 +1,6 @@
 .nav {
   display: flex;
+  align-items: center;
   gap: 22px;
 }
 
@@ -8,16 +9,16 @@
   color: #fff;
   font-size: 14px;
   line-height: 1.28;
-  display: inline-block;
   box-sizing: border-box;
+  transition: 0.3s ease-in-out;
 }
 
 .nav__link_place_account {
   font-size: 13px;
   line-height: 0.92;
-  position: relative;
-  margin: 0 37px 0 39px;
-  transform: translateY(3px);
+  display: flex;
+  align-items: center;
+  margin: 0 3px 0 38px;
 }
 
 .nav__link_place_register {
@@ -25,7 +26,6 @@
   font-size: 12px;
   line-height: 1.33;
   margin: 8px 9px 0 0;
-  transition: 0.3s;
 }
 
 .nav__link_place_login {
@@ -39,10 +39,17 @@
   font-size: 12px;
   line-height: 1.33;
   color: #000000;
-  transition: 0.3s;
 }
 
 .nav__link_selected {
+  font-weight: 500;
+}
+
+.nav__link-text {
+  margin: 0;
+}
+
+.nav__link-text_selected {
   font-weight: 500;
 }
 
@@ -51,9 +58,9 @@
   border-radius: 50%;
   width: 12px;
   height: 12px;
-  padding: 7px;
-  position: absolute;
-  right: -33px;
+  margin-left: 8px;
+  padding: 7px 7px 7px 7px;
+  right: 3px;
   top: -7px;
 }
 
@@ -82,10 +89,6 @@
 @media (any-hover: hover) {
   .nav__link:hover {
     transform: scale(1.1);
-    transition: 0.3s ease-in-out;
-  }
-  .nav__link_place_account:hover {
-    transform: scale(1.1) translateY(3px);
   }
 }
 
@@ -113,6 +116,8 @@
   .nav__link {
     font-size: 18px;
     line-height: 1.22;
+    padding-bottom: 4px;
+    border-bottom: 2px solid transparent;
   }
 
   .nav__link_place_register {
@@ -126,13 +131,21 @@
   }
 
   .nav__link_selected {
+    border-bottom-color: #fff;
+  }
+
+  .nav__link-text {
+    padding: 4px 0;
+  }
+
+  .nav__link-text_selected {
     border-bottom: 2px solid #fff;
   }
 
   .nav__link_place_account {
     font-size: 13px;
     line-height: 0.92;
-    margin: 0 25px 100px 0;
+    margin: 0 0 90px 5px;
     align-self: flex-end;
   }
 
@@ -148,15 +161,12 @@
     gap: 14px;
   }
   .nav_hidden {
-    padding-top: 147px;
+    padding-top: 138px;
     grid-template-rows: repeat(3, 46px) 1fr;
     gap: 0;
   }
-  .nav__link_selected {
-    margin-bottom: 16px;
-  }
   .nav__link_place_account {
-    margin-bottom: 127px;
+    margin-bottom: 112px;
   }
   .nav__link_place_login {
     font-size: 10px;
