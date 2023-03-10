@@ -13,7 +13,7 @@ const useErrorShielding = (formik) => {
     if (dirty) setIsSubmitted(false);
   }, [values]);
 
-  return { isSubmitted, setIsSubmitted, handleSubmit };
+  return { isSubmitted, handleSubmit };
 };
 
 export default useErrorShielding;
