@@ -5,9 +5,9 @@ import { useContext, useEffect } from 'react';
 import useForm from '../../hooks/useForm';
 import useErrorShielding from '../../hooks/useErrorShielding';
 
-const Profile = (props) => {
+const Profile = ({ onSubmit, errorMessage, onLogout }) => {
   const currentUser = useContext(CurrentUserContext);
-  const { formik, disabled } = useForm({ name: '', email: '' }, props.onSubmit);
+  const { formik, disabled } = useForm({ name: '', email: '' }, onSubmit);
   const { touched, errors, resetForm } = formik;
   const { isSubmitted, handleSubmit } = useErrorShielding(formik);
 
@@ -40,12 +40,8 @@ const Profile = (props) => {
       />
 
       <div className="profile__submit-area">
-        <p
-          className={`profile__submit-info${
-            props.errorMessage ? ' profile__submit-info_onError' : ''
-          }`}
-        >
-          {isSubmitted && (props.errorMessage || 'Данные профиля обновлены')}
+        <p className={`profile__submit-info${errorMessage ? ' profile__submit-info_onError' : ''}`}>
+          {isSubmitted && (errorMessage || 'Данные профиля обновлены')}
         </p>
         <button
           className={`profile__submit-button${disabled ? ' profile__submit-button_disabled' : ''}`}
@@ -57,7 +53,7 @@ const Profile = (props) => {
         </button>
         <button
           className="profile__logout"
-          onClick={props.onLogout}
+          onClick={onLogout}
           type="button"
           aria-label="Выйти из аккаунта"
         >

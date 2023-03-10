@@ -10,7 +10,7 @@ import {
   CHANGE_HEADER_WIDTH,
 } from '../../utils/constants';
 
-const Header = ({ place, ...props }) => {
+const Header = ({ place, loggedIn }) => {
   const [isHidden, setIsHidden] = useState(false);
   const [isMain, setIsMain] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -50,16 +50,13 @@ const Header = ({ place, ...props }) => {
       />
       <div className="header__nav page__element">
         <Logo />
-        <Navigation
-          loggedIn={props.loggedIn}
-          isOpen={isMenuOpen}
-          onClose={closeMenu}
-          place={place}
-        />
-        {props.loggedIn && (
+        <Navigation loggedIn={loggedIn} isOpen={isMenuOpen} onClose={closeMenu} place={place} />
+        {loggedIn && (
           <button
             className={`header__menu${isMenuOpen ? ' header__menu_active' : ''}`}
             onClick={toggler}
+            type="button"
+            aria-label={isMenuOpen ? ' Закрыть меню' : 'Открыть меню'}
           >
             <span></span>
             <span></span>

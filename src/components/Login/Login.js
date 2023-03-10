@@ -5,11 +5,11 @@ import Field from '../Field/Field';
 import useForm from '../../hooks/useForm';
 import { Navigate } from 'react-router-dom';
 
-const Login = (props) => {
-  const { formik, disabled } = useForm({ email: '', password: '' }, props.onSubmit);
+const Login = ({ onSubmit, errorMessage, loggedIn }) => {
+  const { formik, disabled } = useForm({ email: '', password: '' }, onSubmit);
   const { touched, errors } = formik;
 
-  if (props.loggedIn) return <Navigate to={ROUTE_MAIN} />;
+  if (loggedIn) return <Navigate to={ROUTE_MAIN} />;
 
   return (
     <AuthForm
@@ -19,7 +19,7 @@ const Login = (props) => {
       route={ROUTE_SIGN_UP}
       linkText="Регистрация"
       disabled={disabled}
-      errorMessage={props.errorMessage}
+      errorMessage={errorMessage}
       formik={formik}
     >
       <Field

@@ -177,8 +177,8 @@ const App = () => {
             path={ROUTE_MOVIES}
             element={
               <ProtectedRoute
-                loggedIn={loggedIn}
                 component={Movies}
+                loggedIn={loggedIn}
                 handleLikeMovie={handleLikeMovie}
                 getDefaultMovies={getDefaultMovies}
                 getSavedMovies={getSavedMovies}
@@ -190,8 +190,8 @@ const App = () => {
             path={ROUTE_SAVED_MOVIES}
             element={
               <ProtectedRoute
-                loggedIn={loggedIn}
                 component={SavedMovies}
+                loggedIn={loggedIn}
                 getSavedMovies={getSavedMovies}
                 deleteMovie={deleteSavedMovie}
                 errorMessage={errorMessage}
@@ -203,19 +203,15 @@ const App = () => {
             path={ROUTE_PROFILE}
             element={
               <ProtectedRoute
-                loggedIn={loggedIn}
                 component={Profile}
+                loggedIn={loggedIn}
                 onLogout={logout}
                 onSubmit={updateUser}
                 errorMessage={errorMessage}
               />
             }
           />
-          <Route
-            exact
-            path={ROUTE_MAIN}
-            element={<Main loggedIn={loggedIn} openPopup={openPopup} />}
-          />
+          <Route exact path={ROUTE_MAIN} element={<Main />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
         <Footer place={pathname} />
